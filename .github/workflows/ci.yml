@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install MinGW
+        run: sudo apt-get update && sudo apt-get install -y mingw-w64 gcc make
+
+      - name: Build Linux
+        run: make clean && make
+
+      - name: Build Windows 98
+        run: make win98
+
+      - name: Package artifacts
+        run: |
+          VERSION="$(date -u +%Y%m%d-%H%M%S)"
+          echo "VERSION=${VERSION}" >> "$GITHUB_ENV"
+          mkdir -p dist
+          cp metro-rush "dist/metro-rush-linux-x86_64"
+          cp metro-rush.exe "dist/metro-rush-win98-i386.exe"
+          file dist/*
+          (cd dist && tar -czf "../metro-rush-${VERSION}-linux-x86_64.tar.gz" metro-rush-linux-x86_64)
+          (cd dist && zip -9 "../metro-rush-${VERSION}-win98-i386.zip" metro-rush-win98-i386.exe)
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: metro-rush-${{ env.VERSION }}
+          path: |
+            metro-rush-*-linux-x86_64.tar.gz
+            metro-rush-*-win98-i386.zip
+
+      - name: Create GitHub Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v${VERSION}"
+          gh release create "$TAG" \
+            "metro-rush-${VERSION}-linux-x86_64.tar.gz" \
+            "metro-rush-${VERSION}-win98-i386.zip" \
+            --title "$TAG" \
+            --notes "Automated build from commit ${GITHUB_SHA}.
+
+          - Linux x86_64 (needs libX11; no other third-party deps)
+          - Windows 98-compatible i386 PE (GDI)"

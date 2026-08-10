@@ -1,0 +1,9 @@
+metro-rush
+metro-rush.exe
+*.o
+src/*.o
+dist/
+metro-rush-*.tar.gz
+metro-rush-*.zip
+.metro-rush-save
+metro-rush.save
