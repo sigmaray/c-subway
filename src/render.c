@@ -18,14 +18,10 @@
 #define COL_SUN_GLOW 0xFFFFECB3u
 #define COL_CLOUD 0xFFFFFFFAu
 #define COL_PLAYER 0xFF00C853u
-#define COL_PLAYER_ACCENT 0xFF1565C0u
 #define COL_PLAYER_SKIN 0xFFFFCC80u
 #define COL_PLAYER_SHOE 0xFFFFEA00u
 #define COL_PLAYER_HAIR 0xFFFF3D00u
-#define COL_PLAYER_GOGGLE 0xFF00E5FFu
 #define COL_PLAYER_PACK 0xFFE53935u
-#define COL_PLAYER_SCARF 0xFFFF6D00u
-#define COL_PLAYER_STRIPE 0xFFFFFFFFu
 #define COL_PLAYER_PANTS 0xFF263238u
 #define COL_BOARD 0xFF00E5FFu
 #define COL_BOARD_GLOW 0xFF76FFFFu
@@ -54,11 +50,11 @@
 #define COL_SIGN 0xFF00E5FFu
 #define COL_SIGN_ALT 0xFFFF4081u
 #define COL_PILLAR 0xFFB0BEC5u
-#define COL_TRACK 0xFF8D6E63u
-#define COL_TRACK_CENTER 0xFF6D4C41u
-#define COL_BALLAST 0xFFA1887Fu
-#define COL_RAIL 0xFFECEFF1u
-#define COL_SLEEPER 0xFF5D4037u
+#define COL_TRACK 0xFF4E342Eu
+#define COL_TRACK_CENTER 0xFF3E2723u
+#define COL_BALLAST 0xFF5D4037u
+#define COL_RAIL 0xFF607D8Bu
+#define COL_SLEEPER 0xFF3E2723u
 #define COL_PLATFORM 0xFF90A4AEu
 #define COL_PLATFORM_TOP 0xFFCFD8DCu
 #define COL_PLATFORM_EDGE 0xFFFFD600u
@@ -1019,77 +1015,51 @@ static void draw_player(Framebuffer *fb, const CameraTransform *cam,
     }
   }
 
-  bodyH = (sliding ? 0.35f : 0.55f) * S;
-  /* torso — green hoodie */
+  bodyH = (sliding ? 0.42f : 0.62f) * S;
+  /* torso — one solid body block */
   draw_box(fb, cam, basis,
-           vec3(px, py + (sliding ? 0.35f : 0.78f) * S, pz),
-           vec3(0.32f * S, bodyH * 0.5f, 0.24f * S), bodyColor);
-  /* white chest stripe / hoodie detail */
-  if (!sliding) {
-    draw_box(fb, cam, basis,
-             vec3(px, py + 0.88f * S, pz + 0.01f * S),
-             vec3(0.33f * S, 0.08f * S, 0.25f * S), COL_PLAYER_STRIPE);
-    draw_box(fb, cam, basis,
-             vec3(px, py + 0.68f * S, pz + 0.02f * S),
-             vec3(0.13f * S, 0.2f * S, 0.25f * S), shade_color(bodyColor, 1.12f));
-  }
-  /* backpack */
+           vec3(px, py + (sliding ? 0.38f : 0.82f) * S, pz),
+           vec3(0.34f * S, bodyH * 0.5f, 0.26f * S), bodyColor);
+  /* backpack — single piece */
   draw_box(fb, cam, basis,
-           vec3(px, py + (sliding ? 0.42f : 0.88f) * S, pz - 0.3f * S),
-           vec3(0.22f * S, 0.26f * S, 0.12f * S), COL_PLAYER_PACK);
+           vec3(px, py + (sliding ? 0.44f : 0.9f) * S, pz - 0.3f * S),
+           vec3(0.24f * S, 0.28f * S, 0.14f * S), COL_PLAYER_PACK);
+  /* head + hair as two simple blocks */
   draw_box(fb, cam, basis,
-           vec3(px, py + (sliding ? 0.5f : 0.96f) * S, pz - 0.36f * S),
-           vec3(0.15f * S, 0.09f * S, 0.07f * S),
-           shade_color(COL_PLAYER_PACK, 0.75f));
-  /* scarf / collar */
+           vec3(px, py + (sliding ? 0.78f : 1.4f) * S, pz),
+           vec3(0.26f * S, 0.26f * S, 0.26f * S), COL_PLAYER_SKIN);
   draw_box(fb, cam, basis,
-           vec3(px, py + (sliding ? 0.58f : 1.08f) * S, pz + 0.15f * S),
-           vec3(0.26f * S, 0.07f * S, 0.1f * S), COL_PLAYER_SCARF);
-  /* head */
-  draw_box(fb, cam, basis,
-           vec3(px, py + (sliding ? 0.75f : 1.42f) * S, pz),
-           vec3(0.24f * S, 0.24f * S, 0.24f * S), COL_PLAYER_SKIN);
-  /* red mohawk */
-  draw_box(fb, cam, basis,
-           vec3(px, py + (sliding ? 0.98f : 1.66f) * S, pz - 0.02f * S),
-           vec3(0.09f * S, 0.18f * S, 0.2f * S), COL_PLAYER_HAIR);
-  draw_box(fb, cam, basis,
-           vec3(px, py + (sliding ? 0.9f : 1.58f) * S, pz - 0.06f * S),
-           vec3(0.22f * S, 0.09f * S, 0.2f * S),
-           shade_color(COL_PLAYER_HAIR, 0.85f));
-  /* goggles */
-  draw_box(fb, cam, basis,
-           vec3(px, py + (sliding ? 0.78f : 1.44f) * S, pz + 0.22f * S),
-           vec3(0.26f * S, 0.08f * S, 0.07f * S), COL_PLAYER_GOGGLE);
+           vec3(px, py + (sliding ? 1.0f : 1.64f) * S, pz - 0.02f * S),
+           vec3(0.14f * S, 0.16f * S, 0.22f * S), COL_PLAYER_HAIR);
   /* arms */
   draw_box(fb, cam, basis,
            vec3(px - 0.44f * S,
                 py + (sliding ? 0.4f : 0.84f) * S + armSwing, pz),
-           vec3(0.1f * S, 0.3f * S, 0.1f * S), bodyColor);
+           vec3(0.11f * S, 0.32f * S, 0.11f * S), bodyColor);
   draw_box(fb, cam, basis,
            vec3(px + 0.44f * S,
                 py + (sliding ? 0.4f : 0.84f) * S - armSwing, pz),
-           vec3(0.1f * S, 0.3f * S, 0.1f * S), bodyColor);
-  /* legs / dark pants */
+           vec3(0.11f * S, 0.32f * S, 0.11f * S), bodyColor);
+  /* legs */
   draw_box(fb, cam, basis,
-           vec3(px - 0.18f * S,
-                py + (sliding ? 0.12f : 0.28f) * S - legSwing * 0.3f,
+           vec3(px - 0.16f * S,
+                py + (sliding ? 0.14f : 0.3f) * S - legSwing * 0.3f,
                 pz + legSwing * 0.4f),
-           vec3(0.1f * S, 0.24f * S, 0.1f * S), COL_PLAYER_PANTS);
+           vec3(0.12f * S, 0.26f * S, 0.12f * S), COL_PLAYER_PANTS);
   draw_box(fb, cam, basis,
-           vec3(px + 0.18f * S,
-                py + (sliding ? 0.12f : 0.28f) * S + legSwing * 0.3f,
+           vec3(px + 0.16f * S,
+                py + (sliding ? 0.14f : 0.3f) * S + legSwing * 0.3f,
                 pz - legSwing * 0.4f),
-           vec3(0.1f * S, 0.24f * S, 0.1f * S), COL_PLAYER_PANTS);
-  /* yellow shoes */
+           vec3(0.12f * S, 0.26f * S, 0.12f * S), COL_PLAYER_PANTS);
+  /* shoes */
   draw_box(fb, cam, basis,
-           vec3(px - 0.18f * S, py + 0.05f * S,
+           vec3(px - 0.16f * S, py + 0.05f * S,
                 pz + 0.06f * S + legSwing * 0.4f),
-           vec3(0.13f * S, 0.07f * S, 0.18f * S), COL_PLAYER_SHOE);
+           vec3(0.14f * S, 0.07f * S, 0.18f * S), COL_PLAYER_SHOE);
   draw_box(fb, cam, basis,
-           vec3(px + 0.18f * S, py + 0.05f * S,
+           vec3(px + 0.16f * S, py + 0.05f * S,
                 pz + 0.06f * S - legSwing * 0.4f),
-           vec3(0.13f * S, 0.07f * S, 0.18f * S), COL_PLAYER_SHOE);
+           vec3(0.14f * S, 0.07f * S, 0.18f * S), COL_PLAYER_SHOE);
 
   if (boost || recovering) {
     draw_box(fb, cam, basis, vec3(px, py + 0.07f * S, pz),
@@ -1097,10 +1067,6 @@ static void draw_player(Framebuffer *fb, const CameraTransform *cam,
     draw_box(fb, cam, basis,
              vec3(px, py + 0.12f * S, pz - 0.15f * S),
              vec3(0.22f * S, 0.03f * S, 0.28f * S), COL_BOARD_GLOW);
-    draw_box(fb, cam, basis,
-             vec3(px, py + 0.04f * S, pz + 0.6f * S),
-             vec3(0.14f * S, 0.04f * S, 0.22f * S),
-             shade_color(COL_BOARD_GLOW, 1.2f));
   }
 }
 
@@ -1288,9 +1254,9 @@ static void draw_entity(Framebuffer *fb, const CameraTransform *cam,
         float bobY = sinf(time * 5.0f + e->positionZ) * 0.08f;
         Vec3 center = vec3(b.center.x, b.center.y + bobY, b.center.z);
         /* Round spinning coin: rim → body → bright core */
-        draw_billboard_disc(fb, cam, basis, center, 0.48f, squash, COL_COIN_RIM);
-        draw_billboard_disc(fb, cam, basis, center, 0.40f, squash, COL_COIN);
-        draw_billboard_disc(fb, cam, basis, center, 0.18f, squash, COL_COIN_CORE);
+        draw_billboard_disc(fb, cam, basis, center, 0.38f, squash, COL_COIN_RIM);
+        draw_billboard_disc(fb, cam, basis, center, 0.32f, squash, COL_COIN);
+        draw_billboard_disc(fb, cam, basis, center, 0.14f, squash, COL_COIN_CORE);
       }
       break;
 
