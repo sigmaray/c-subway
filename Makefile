@@ -14,7 +14,10 @@ WIN32_CC ?= i686-w64-mingw32-gcc
 WIN32_CFLAGS = -std=c99 -O2 -Wall -Wextra -Iinclude -DMETRO_WIN32 \
 	-DWINVER=0x0400 -D_WIN32_WINDOWS=0x0400 -D_WIN32_WINNT=0x0400 \
 	-fno-stack-protector
+# --allow-multiple-definition: local _strtoi64/_strtoui64 beat msvcrt import stubs
+# (those exports are missing from Windows 98's msvcrt.dll).
 WIN32_LDFLAGS = -mwindows -lgdi32 -luser32 -static -static-libgcc \
+	-Wl,--allow-multiple-definition \
 	-Wl,--major-subsystem-version,4,--minor-subsystem-version,0 \
 	-Wl,--major-os-version,4,--minor-os-version,0 \
 	-Wl,--disable-nxcompat,--disable-dynamicbase
@@ -47,8 +50,8 @@ static: $(GAME_SRCS) src/platform_x11.c
 
 win98 win32: metro-rush.exe
 
-metro-rush.exe: $(GAME_SRCS) src/platform_win32.c
-	$(WIN32_CC) $(WIN32_CFLAGS) $(GAME_SRCS) src/platform_win32.c -o $@ $(WIN32_LDFLAGS)
+metro-rush.exe: $(GAME_SRCS) src/platform_win32.c src/win98_compat.c
+	$(WIN32_CC) $(WIN32_CFLAGS) $(GAME_SRCS) src/platform_win32.c src/win98_compat.c -o $@ $(WIN32_LDFLAGS)
 
 clean:
 	rm -f metro-rush metro-rush.exe metro-rush-libx11 *.o src/*.o
