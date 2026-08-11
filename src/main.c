@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FB_WIDTH 640
-#define FB_HEIGHT 480
+#define FB_WIDTH 800
+#define FB_HEIGHT 600
 
 static SaveData save_from_state(const GameState *state) {
   SaveData s;

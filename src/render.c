@@ -9,81 +9,94 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-#define SKY_TOP 0xFF2B9FE8u
-#define SKY_HORIZON 0xFFB8E8FFu
-#define FOG_COLOR 0xFF81D4FAu
-#define COL_SUN 0xFFFFF3B0u
-#define COL_SUN_GLOW 0xFFFFE082u
-#define COL_CLOUD 0xFFFFFFF5u
-#define COL_PLAYER 0xFFFF1E4Du
-#define COL_PLAYER_ACCENT 0xFF2563EBu
-#define COL_PLAYER_SKIN 0xFFFFC29Au
-#define COL_PLAYER_SHOE 0xFFFBBF24u
-#define COL_PLAYER_HAIR 0xFF292524u
-#define COL_PLAYER_GOGGLE 0xFF67E8F9u
-#define COL_PLAYER_PACK 0xFF0284C7u
-#define COL_PLAYER_SCARF 0xFFFF8A00u
+/* Subway Surfers–inspired: bright noon sky, neon city, Jake-like runner. */
+#define SKY_TOP 0xFF1E88E5u
+#define SKY_MID 0xFF4FC3F7u
+#define SKY_HORIZON 0xFFFFE0B2u
+#define FOG_COLOR 0xFF90CAF9u
+#define COL_SUN 0xFFFFF59Du
+#define COL_SUN_GLOW 0xFFFFECB3u
+#define COL_CLOUD 0xFFFFFFFAu
+#define COL_PLAYER 0xFF00C853u
+#define COL_PLAYER_ACCENT 0xFF1565C0u
+#define COL_PLAYER_SKIN 0xFFFFCC80u
+#define COL_PLAYER_SHOE 0xFFFFEA00u
+#define COL_PLAYER_HAIR 0xFFFF3D00u
+#define COL_PLAYER_GOGGLE 0xFF00E5FFu
+#define COL_PLAYER_PACK 0xFFE53935u
+#define COL_PLAYER_SCARF 0xFFFF6D00u
 #define COL_PLAYER_STRIPE 0xFFFFFFFFu
-#define COL_BOARD 0xFF06B6D4u
-#define COL_BARRIER 0xFFFFCC00u
-#define COL_BARRIER_ACCENT 0xFF111827u
-#define COL_OVERHEAD 0xFFA855F7u
-#define COL_OVERHEAD_POST 0xFF334155u
-#define COL_OVERHEAD_LIGHT 0xFFFEF3C7u
-#define COL_CRATE 0xFFC2410Cu
-#define COL_CRATE_STRIPE 0xFFFFCC00u
-#define COL_TRAIN 0xFF22C1F0u
-#define COL_TRAIN_ACCENT 0xFFFF8A3Du
-#define COL_TRAIN_WINDOW 0xFFE8F7FFu
-#define COL_TRAIN_WHEEL 0xFF0F172Au
-#define COL_TRAIN_METAL 0xFF64748Bu
-#define COL_TRAIN_LIGHT 0xFFFFF7EDu
-#define COL_COIN 0xFFFFD60Au
-#define COL_COIN_RIM 0xFFF59E0Bu
-#define COL_COIN_CORE 0xFFFFF3A0u
-#define COL_MAGNET 0xFF38BDF8u
-#define COL_MULTIPLIER 0xFFFFCC00u
-#define COL_INVINCIBLE 0xFFD8B4FEu
-#define COL_BOOST 0xFF2DD4BFu
-#define COL_LAMP 0xFF475569u
-#define COL_LAMP_GLOW 0xFFFFF7EDu
-#define COL_SIGN 0xFF22D3EEu
-#define COL_SIGN_ALT 0xFFFF4D9Au
-#define COL_PILLAR 0xFFA8A29Eu
-#define COL_TRACK 0xFF6B5B4Au
-#define COL_TRACK_CENTER 0xFF564737u
-#define COL_BALLAST 0xFF8A7A66u
-#define COL_RAIL 0xFFFFFFFFu
-#define COL_SLEEPER 0xFF6B3F1Du
-#define COL_PLATFORM 0xFFB0BEC8u
-#define COL_PLATFORM_TOP 0xFFE8EEF3u
-#define COL_PLATFORM_EDGE 0xFFFFCC00u
-#define COL_WALL 0xFF90A4AEu
-#define COL_WALL_TRIM 0xFFFF7A18u
-#define COL_WALL_CAP 0xFFD7E0E8u
-#define COL_BILLBOARD 0xFFFF4D9Au
-#define COL_BILLBOARD_ALT 0xFF4ADE80u
-#define COL_BILLBOARD_FRAME 0xFF1E293Bu
-#define COL_AWNING 0xFFFF2D55u
-#define COL_BUILDING_ACCENT 0xFFFFE566u
-#define COL_BUILDING_ACCENT_COOL 0xFFA5E4FFu
-#define COL_BUILDING_ACCENT_WARM 0xFFFFB4C4u
+#define COL_PLAYER_PANTS 0xFF263238u
+#define COL_BOARD 0xFF00E5FFu
+#define COL_BOARD_GLOW 0xFF76FFFFu
+#define COL_BARRIER 0xFFFFD600u
+#define COL_BARRIER_ACCENT 0xFF212121u
+#define COL_OVERHEAD 0xFFAA00FFu
+#define COL_OVERHEAD_POST 0xFF455A64u
+#define COL_OVERHEAD_LIGHT 0xFFFFF8E1u
+#define COL_CRATE 0xFFEF6C00u
+#define COL_CRATE_STRIPE 0xFFFFD600u
+#define COL_TRAIN 0xFF00BCD4u
+#define COL_TRAIN_ACCENT 0xFFFF6D00u
+#define COL_TRAIN_WINDOW 0xFFE1F5FEu
+#define COL_TRAIN_WHEEL 0xFF212121u
+#define COL_TRAIN_METAL 0xFF78909Cu
+#define COL_TRAIN_LIGHT 0xFFFFFDE7u
+#define COL_COIN 0xFFFFD600u
+#define COL_COIN_RIM 0xFFFF8F00u
+#define COL_COIN_CORE 0xFFFFF59Du
+#define COL_MAGNET 0xFF40C4FFu
+#define COL_MULTIPLIER 0xFFFFD600u
+#define COL_INVINCIBLE 0xFFE040FBu
+#define COL_BOOST 0xFF1DE9B6u
+#define COL_LAMP 0xFF546E7Au
+#define COL_LAMP_GLOW 0xFFFFF8E1u
+#define COL_SIGN 0xFF00E5FFu
+#define COL_SIGN_ALT 0xFFFF4081u
+#define COL_PILLAR 0xFFB0BEC5u
+#define COL_TRACK 0xFF8D6E63u
+#define COL_TRACK_CENTER 0xFF6D4C41u
+#define COL_BALLAST 0xFFA1887Fu
+#define COL_RAIL 0xFFECEFF1u
+#define COL_SLEEPER 0xFF5D4037u
+#define COL_PLATFORM 0xFF90A4AEu
+#define COL_PLATFORM_TOP 0xFFCFD8DCu
+#define COL_PLATFORM_EDGE 0xFFFFD600u
+#define COL_WALL 0xFF78909Cu
+#define COL_WALL_TRIM 0xFFFF6D00u
+#define COL_WALL_CAP 0xFFECEFF1u
+#define COL_BILLBOARD 0xFFFF4081u
+#define COL_BILLBOARD_ALT 0xFF69F0AEu
+#define COL_BILLBOARD_FRAME 0xFF263238u
+#define COL_AWNING 0xFFFF1744u
+#define COL_BUILDING_ACCENT 0xFFFFEA00u
+#define COL_BUILDING_ACCENT_COOL 0xFF80D8FFu
+#define COL_BUILDING_ACCENT_WARM 0xFFFF80ABu
+#define COL_GRAFFITI_A 0xFFFF4081u
+#define COL_GRAFFITI_B 0xFF00E5FFu
+#define COL_GRAFFITI_C 0xFFFFEA00u
+#define COL_GRAFFITI_D 0xFF76FF03u
 #define COL_HUD 0xFFFFFFFFu
-#define COL_HUD_DIM 0xFFE2E8F0u
-#define COL_HUD_OUTLINE 0xFF0F172Au
-#define COL_HUD_PANEL 0xCC0F172Au
-#define COL_HUD_GOLD 0xFFFFD60Au
+#define COL_HUD_DIM 0xFFE0E7EFu
+#define COL_HUD_OUTLINE 0xFF0D1B2Au
+#define COL_HUD_PANEL 0xB31A237Eu
+#define COL_HUD_PANEL_SOFT 0x991A237Eu
+#define COL_HUD_GOLD 0xFFFFD600u
+#define COL_HUD_ACCENT 0xFFFF4081u
 
 static const uint32_t BUILDING_PALETTE[] = {
-    0xFFFFC8B5u, 0xFFFF6B8Au, 0xFF5EEAD4u, 0xFFC4B5FDu, 0xFFFFE08Au,
-    0xFF2DD4BFu, 0xFFFF9AAFu, 0xFF7DD3FCu, 0xFFFFF4E0u};
+    0xFFFFAB91u, 0xFFFF80ABu, 0xFF80CBC4u, 0xFFB39DDBu, 0xFFFFE082u,
+    0xFF4DD0E1u, 0xFFFF8A80u, 0xFF81D4FAu, 0xFFFFF3E0u};
 
 static const uint32_t TRAIN_BODY[] = {
-    0xFFFF2D6Au, 0xFF22C55Eu, 0xFFFF7A18u, 0xFF6366F1u,
-    0xFF14B8A6u, 0xFFE11D48u, 0xFF22C1F0u};
+    0xFFFF1744u, 0xFF00C853u, 0xFFFF6D00u, 0xFF2979FFu,
+    0xFF00BFA5u, 0xFFD50000u, 0xFF00B0FFu};
 static const uint32_t TRAIN_ACCENT[] = {
-    0xFFFFF1C2u, 0xFF1E3A8Au, 0xFF38BDF8u, 0xFFFF4D6Du,
-    0xFFFFCC00u, 0xFFFFFFFFu, 0xFFFF8A3Du};
+    0xFFFFF59Du, 0xFF1A237Eu, 0xFF40C4FFu, 0xFFFF4081u,
+    0xFFFFD600u, 0xFFFFFFFFu, 0xFFFFAB40u};
+static const uint32_t GRAFFITI_PALETTE[] = {
+    COL_GRAFFITI_A, COL_GRAFFITI_B, COL_GRAFFITI_C, COL_GRAFFITI_D,
+    0xFFE040FBu, 0xFFFF6E40u, 0xFF18FFFFu};
 
 typedef struct CameraTransform {
   Vec3 position;
@@ -463,9 +476,14 @@ static void clear_framebuffer(Framebuffer *fb) {
   int i;
   for (y = 0; y < fb->height; y++) {
     float t = (float)y / (float)(fb->height > 1 ? fb->height - 1 : 1);
-    /* Soft Subway-style sky: deep blue above, bright horizon below. */
+    /* Subway Surfers noon sky: deep blue → cyan → warm horizon haze. */
     float curve = t * t * (3.0f - 2.0f * t);
-    uint32_t row = lerp_color(SKY_TOP, SKY_HORIZON, curve);
+    uint32_t row;
+    if (curve < 0.55f) {
+      row = lerp_color(SKY_TOP, SKY_MID, curve / 0.55f);
+    } else {
+      row = lerp_color(SKY_MID, SKY_HORIZON, (curve - 0.55f) / 0.45f);
+    }
     uint32_t *line = fb->pixels + y * fb->width;
     for (x = 0; x < fb->width; x++) {
       line[x] = row;
@@ -551,6 +569,90 @@ static void fill_triangle(Framebuffer *fb, ProjVert a, ProjVert b, ProjVert c,
       }
       z = w0 * a.z + w1 * b.z + w2 * c.z;
       put_pixel(fb, x, y, z, color);
+    }
+  }
+}
+
+/* Camera-facing ellipse (used for round spinning coins). */
+static void draw_billboard_disc(Framebuffer *fb, const CameraTransform *cam,
+                                const CamBasis *basis, Vec3 center,
+                                float worldRadius, float squashX,
+                                uint32_t color) {
+  ViewVert v;
+  ViewVert edgeX;
+  ViewVert edgeY;
+  ProjVert p;
+  ProjVert px;
+  ProjVert py;
+  float rx, ry, depth;
+  float r2;
+  int minx, maxx, miny, maxy;
+  int x, y;
+  uint32_t shaded;
+
+  if (worldRadius <= 0.0f || squashX <= 0.02f) {
+    return;
+  }
+
+  v = world_to_view(center, cam, basis);
+  if (v.z < NEAR_CLIP) {
+    return;
+  }
+  p = project_view(v, basis, fb->width, fb->height);
+  if (!p.valid) {
+    return;
+  }
+
+  edgeX = v;
+  edgeX.x += worldRadius;
+  edgeY = v;
+  edgeY.y += worldRadius;
+  px = project_view(edgeX, basis, fb->width, fb->height);
+  py = project_view(edgeY, basis, fb->width, fb->height);
+  if (!px.valid || !py.valid) {
+    return;
+  }
+
+  rx = absf(px.x - p.x) * squashX;
+  ry = absf(py.y - p.y);
+  if (rx < 0.6f) {
+    rx = 0.6f;
+  }
+  if (ry < 0.6f) {
+    ry = 0.6f;
+  }
+
+  depth = v.z;
+  shaded = apply_fog(shade_color(color, 1.05f), depth);
+
+  minx = (int)floorf(p.x - rx);
+  maxx = (int)ceilf(p.x + rx);
+  miny = (int)floorf(p.y - ry);
+  maxy = (int)ceilf(p.y + ry);
+  if (minx < 0) {
+    minx = 0;
+  }
+  if (miny < 0) {
+    miny = 0;
+  }
+  if (maxx >= fb->width) {
+    maxx = fb->width - 1;
+  }
+  if (maxy >= fb->height) {
+    maxy = fb->height - 1;
+  }
+
+  r2 = 1.0f;
+  for (y = miny; y <= maxy; y++) {
+    for (x = minx; x <= maxx; x++) {
+      float dx = ((float)x + 0.5f - p.x) / rx;
+      float dy = ((float)y + 0.5f - p.y) / ry;
+      float d2 = dx * dx + dy * dy;
+      if (d2 <= r2) {
+        /* Soft rim darkening near the edge */
+        float edge = d2 > 0.72f ? (1.0f - (d2 - 0.72f) / 0.28f * 0.22f) : 1.0f;
+        put_pixel(fb, x, y, depth, shade_color(shaded, edge));
+      }
     }
   }
 }
@@ -642,10 +744,10 @@ static void draw_box(Framebuffer *fb, const CameraTransform *cam,
 static void draw_building(Framebuffer *fb, const CameraTransform *cam,
                           const CamBasis *basis, float side, float z,
                           int seed) {
-  static const float heights[] = {9.5f, 14.5f, 7.2f, 11.0f};
-  static const float widths[] = {4.8f, 3.6f, 6.8f, 2.8f};
-  static const float depths[] = {5.5f, 5.0f, 5.8f, 4.8f};
-  int shape = ((seed % 4) + 4) % 4;
+  static const float heights[] = {9.5f, 14.5f, 7.2f, 11.0f, 17.0f};
+  static const float widths[] = {4.8f, 3.6f, 6.8f, 2.8f, 5.2f};
+  static const float depths[] = {5.5f, 5.0f, 5.8f, 4.8f, 5.4f};
+  int shape = ((seed % 5) + 5) % 5;
   int seedPos = (seed < 0) ? -seed : seed;
   float h = heights[shape] * (0.88f + (float)(seedPos % 3) * 0.08f);
   float w = widths[shape];
@@ -657,16 +759,23 @@ static void draw_building(Framebuffer *fb, const CameraTransform *cam,
                     : (seedPos % 3 == 1) ? COL_BUILDING_ACCENT_COOL
                                          : COL_BUILDING_ACCENT_WARM;
   int band;
+  int win;
 
   draw_box(fb, cam, basis, vec3(x, baseY, z), vec3(w * 0.5f, h * 0.5f, d * 0.5f),
            facade);
-  for (band = 0; band < 4; band++) {
-    float by = 1.5f + (float)band * (shape == 1 ? 2.7f : 1.85f);
+  for (band = 0; band < 5; band++) {
+    float by = 1.4f + (float)band * (shape == 1 || shape == 4 ? 2.5f : 1.75f);
     if (by > h - 0.8f) {
       break;
     }
     draw_box(fb, cam, basis, vec3(x, by, z),
-             vec3(w * 0.46f, 0.22f, d * 0.46f), accent);
+             vec3(w * 0.46f, 0.18f, d * 0.46f), accent);
+    for (win = 0; win < 3; win++) {
+      float wx = x - w * 0.28f + (float)win * (w * 0.28f);
+      draw_box(fb, cam, basis, vec3(wx, by, z + side * d * 0.48f),
+               vec3(0.22f, 0.28f, 0.05f),
+               shade_color(COL_TRAIN_WINDOW, 0.95f + (float)(win % 2) * 0.15f));
+    }
   }
   if (seedPos % 2 == 0) {
     draw_box(fb, cam, basis, vec3(x + side * 0.8f, h + 0.6f, z),
@@ -675,6 +784,11 @@ static void draw_building(Framebuffer *fb, const CameraTransform *cam,
   if (seedPos % 3 == 0) {
     draw_box(fb, cam, basis, vec3(x + side * -1.5f, 2.5f, z),
              vec3(1.4f, 0.1f, 0.7f), COL_AWNING);
+  }
+  if (seedPos % 4 == 0) {
+    draw_box(fb, cam, basis, vec3(x, h + 0.05f, z),
+             vec3(w * 0.48f, 0.08f, d * 0.48f),
+             GRAFFITI_PALETTE[seedPos % 7]);
   }
 }
 
@@ -786,6 +900,21 @@ static void draw_ground(Framebuffer *fb, const CameraTransform *cam,
                vec3(0.24f, 0.14f, halfLen), COL_WALL_TRIM);
       draw_box(fb, cam, basis, vec3(sx * 7.35f, 4.05f, zMid),
                vec3(0.28f, 0.11f, halfLen), COL_WALL_CAP);
+      /* Graffiti patches on retaining walls */
+      {
+        int cell = (int)floor((double)(-zMid / stripLen));
+        uint32_t gcol = GRAFFITI_PALETTE[(cell * 3 + side + 7) % 7];
+        if ((cell + side) % 3 != 0) {
+          draw_box(fb, cam, basis, vec3(sx * 7.18f, 1.6f + (float)(cell % 3) * 0.35f, zMid),
+                   vec3(0.06f, 0.55f, halfLen * 0.55f), gcol);
+        }
+        if ((cell + side) % 4 == 0) {
+          draw_box(fb, cam, basis,
+                   vec3(sx * 7.18f, 2.8f, zMid - 0.4f),
+                   vec3(0.06f, 0.4f, 0.7f),
+                   GRAFFITI_PALETTE[(cell + 2) % 7]);
+        }
+      }
     }
 
     for (laneIdx = 0; laneIdx < 3; laneIdx++) {
@@ -837,12 +966,15 @@ static void draw_ground(Framebuffer *fb, const CameraTransform *cam,
 
 static void draw_player(Framebuffer *fb, const CameraTransform *cam,
                         const CamBasis *basis, const GameState *state) {
+  const float S = 1.48f; /* larger hero, Subway Surfers scale */
   const PlayerState *p = &state->player;
   float bob = 0.0f;
   float py;
   float bodyH;
   float armSwing = 0.0f;
   float legSwing = 0.0f;
+  float px = p->position.x;
+  float pz = p->position.z;
   uint32_t bodyColor = COL_PLAYER;
   bool sliding = player_is_sliding(p);
   bool recovering = player_is_board_recovering(p);
@@ -853,6 +985,7 @@ static void draw_player(Framebuffer *fb, const CameraTransform *cam,
   bool groundedRun = !sliding && p->movement.type != MOVE_STUNNED &&
                      p->movement.type != MOVE_JUMPING &&
                      p->movement.type != MOVE_FALLING;
+  int streak;
 
   if (recovering && ((int)(state->elapsedSeconds * 14.0f) & 1) == 0) {
     return;
@@ -860,11 +993,11 @@ static void draw_player(Framebuffer *fb, const CameraTransform *cam,
 
   if (groundedRun) {
     float phase = state->elapsedSeconds * (11.0f + state->speed * 0.4f);
-    bob = absf(sinf(phase)) * 0.06f;
-    armSwing = sinf(phase) * 0.18f;
-    legSwing = sinf(phase) * 0.14f;
+    bob = absf(sinf(phase)) * 0.06f * S;
+    armSwing = sinf(phase) * 0.18f * S;
+    legSwing = sinf(phase) * 0.14f * S;
   }
-  py = p->position.y + bob + ((boost || recovering) ? 0.12f : 0.0f);
+  py = p->position.y + bob + ((boost || recovering) ? 0.12f * S : 0.0f);
 
   if (invincible) {
     bodyColor = COL_INVINCIBLE;
@@ -874,81 +1007,100 @@ static void draw_player(Framebuffer *fb, const CameraTransform *cam,
     bodyColor = shade_color(COL_PLAYER, 0.9f);
   }
 
-  bodyH = sliding ? 0.35f : 0.55f;
-  /* torso */
+  /* Motion streaks while boosting — classic Subway Surfers feel */
+  if (boost || recovering) {
+    for (streak = 0; streak < 4; streak++) {
+      float back = (0.55f + (float)streak * 0.45f) * S;
+      float fade = 1.0f - (float)streak * 0.18f;
+      draw_box(fb, cam, basis,
+               vec3(px, py + 0.7f * S, pz + back),
+               vec3(0.08f * S, (0.45f - (float)streak * 0.06f) * S, 0.18f * S),
+               shade_color(COL_BOARD_GLOW, fade));
+    }
+  }
+
+  bodyH = (sliding ? 0.35f : 0.55f) * S;
+  /* torso — green hoodie */
   draw_box(fb, cam, basis,
-           vec3(p->position.x, py + (sliding ? 0.35f : 0.78f), p->position.z),
-           vec3(0.29f, bodyH * 0.5f, 0.22f), bodyColor);
-  /* white chest stripe */
+           vec3(px, py + (sliding ? 0.35f : 0.78f) * S, pz),
+           vec3(0.32f * S, bodyH * 0.5f, 0.24f * S), bodyColor);
+  /* white chest stripe / hoodie detail */
   if (!sliding) {
     draw_box(fb, cam, basis,
-             vec3(p->position.x, py + 0.88f, p->position.z + 0.01f),
-             vec3(0.3f, 0.07f, 0.23f), COL_PLAYER_STRIPE);
+             vec3(px, py + 0.88f * S, pz + 0.01f * S),
+             vec3(0.33f * S, 0.08f * S, 0.25f * S), COL_PLAYER_STRIPE);
+    draw_box(fb, cam, basis,
+             vec3(px, py + 0.68f * S, pz + 0.02f * S),
+             vec3(0.13f * S, 0.2f * S, 0.25f * S), shade_color(bodyColor, 1.12f));
   }
   /* backpack */
   draw_box(fb, cam, basis,
-           vec3(p->position.x, py + (sliding ? 0.42f : 0.88f),
-                p->position.z - 0.28f),
-           vec3(0.2f, 0.23f, 0.11f), COL_PLAYER_PACK);
-  /* scarf */
+           vec3(px, py + (sliding ? 0.42f : 0.88f) * S, pz - 0.3f * S),
+           vec3(0.22f * S, 0.26f * S, 0.12f * S), COL_PLAYER_PACK);
   draw_box(fb, cam, basis,
-           vec3(p->position.x, py + (sliding ? 0.58f : 1.08f),
-                p->position.z + 0.14f),
-           vec3(0.24f, 0.06f, 0.09f), COL_PLAYER_SCARF);
+           vec3(px, py + (sliding ? 0.5f : 0.96f) * S, pz - 0.36f * S),
+           vec3(0.15f * S, 0.09f * S, 0.07f * S),
+           shade_color(COL_PLAYER_PACK, 0.75f));
+  /* scarf / collar */
+  draw_box(fb, cam, basis,
+           vec3(px, py + (sliding ? 0.58f : 1.08f) * S, pz + 0.15f * S),
+           vec3(0.26f * S, 0.07f * S, 0.1f * S), COL_PLAYER_SCARF);
   /* head */
   draw_box(fb, cam, basis,
-           vec3(p->position.x, py + (sliding ? 0.75f : 1.42f), p->position.z),
-           vec3(0.22f, 0.22f, 0.22f), COL_PLAYER_SKIN);
-  /* hair */
+           vec3(px, py + (sliding ? 0.75f : 1.42f) * S, pz),
+           vec3(0.24f * S, 0.24f * S, 0.24f * S), COL_PLAYER_SKIN);
+  /* red mohawk */
   draw_box(fb, cam, basis,
-           vec3(p->position.x, py + (sliding ? 0.92f : 1.6f),
-                p->position.z - 0.04f),
-           vec3(0.24f, 0.09f, 0.2f), COL_PLAYER_HAIR);
-  /* cap */
+           vec3(px, py + (sliding ? 0.98f : 1.66f) * S, pz - 0.02f * S),
+           vec3(0.09f * S, 0.18f * S, 0.2f * S), COL_PLAYER_HAIR);
   draw_box(fb, cam, basis,
-           vec3(p->position.x, py + (sliding ? 0.98f : 1.66f), p->position.z),
-           vec3(0.24f, 0.06f, 0.23f), COL_PLAYER_ACCENT);
+           vec3(px, py + (sliding ? 0.9f : 1.58f) * S, pz - 0.06f * S),
+           vec3(0.22f * S, 0.09f * S, 0.2f * S),
+           shade_color(COL_PLAYER_HAIR, 0.85f));
   /* goggles */
   draw_box(fb, cam, basis,
-           vec3(p->position.x, py + (sliding ? 0.78f : 1.44f),
-                p->position.z + 0.2f),
-           vec3(0.24f, 0.07f, 0.06f), COL_PLAYER_GOGGLE);
+           vec3(px, py + (sliding ? 0.78f : 1.44f) * S, pz + 0.22f * S),
+           vec3(0.26f * S, 0.08f * S, 0.07f * S), COL_PLAYER_GOGGLE);
   /* arms */
   draw_box(fb, cam, basis,
-           vec3(p->position.x - 0.4f, py + (sliding ? 0.4f : 0.84f) + armSwing,
-                p->position.z),
-           vec3(0.09f, 0.28f, 0.09f), COL_PLAYER_ACCENT);
+           vec3(px - 0.44f * S,
+                py + (sliding ? 0.4f : 0.84f) * S + armSwing, pz),
+           vec3(0.1f * S, 0.3f * S, 0.1f * S), bodyColor);
   draw_box(fb, cam, basis,
-           vec3(p->position.x + 0.4f, py + (sliding ? 0.4f : 0.84f) - armSwing,
-                p->position.z),
-           vec3(0.09f, 0.28f, 0.09f), COL_PLAYER_ACCENT);
-  /* legs */
+           vec3(px + 0.44f * S,
+                py + (sliding ? 0.4f : 0.84f) * S - armSwing, pz),
+           vec3(0.1f * S, 0.3f * S, 0.1f * S), bodyColor);
+  /* legs / dark pants */
   draw_box(fb, cam, basis,
-           vec3(p->position.x - 0.16f,
-                py + (sliding ? 0.12f : 0.28f) - legSwing * 0.3f,
-                p->position.z + legSwing * 0.4f),
-           vec3(0.09f, 0.22f, 0.09f), COL_PLAYER_ACCENT);
+           vec3(px - 0.18f * S,
+                py + (sliding ? 0.12f : 0.28f) * S - legSwing * 0.3f,
+                pz + legSwing * 0.4f),
+           vec3(0.1f * S, 0.24f * S, 0.1f * S), COL_PLAYER_PANTS);
   draw_box(fb, cam, basis,
-           vec3(p->position.x + 0.16f,
-                py + (sliding ? 0.12f : 0.28f) + legSwing * 0.3f,
-                p->position.z - legSwing * 0.4f),
-           vec3(0.09f, 0.22f, 0.09f), COL_PLAYER_ACCENT);
-  /* shoes */
+           vec3(px + 0.18f * S,
+                py + (sliding ? 0.12f : 0.28f) * S + legSwing * 0.3f,
+                pz - legSwing * 0.4f),
+           vec3(0.1f * S, 0.24f * S, 0.1f * S), COL_PLAYER_PANTS);
+  /* yellow shoes */
   draw_box(fb, cam, basis,
-           vec3(p->position.x - 0.16f, py + 0.05f,
-                p->position.z + 0.06f + legSwing * 0.4f),
-           vec3(0.12f, 0.06f, 0.16f), COL_PLAYER_SHOE);
+           vec3(px - 0.18f * S, py + 0.05f * S,
+                pz + 0.06f * S + legSwing * 0.4f),
+           vec3(0.13f * S, 0.07f * S, 0.18f * S), COL_PLAYER_SHOE);
   draw_box(fb, cam, basis,
-           vec3(p->position.x + 0.16f, py + 0.05f,
-                p->position.z + 0.06f - legSwing * 0.4f),
-           vec3(0.12f, 0.06f, 0.16f), COL_PLAYER_SHOE);
+           vec3(px + 0.18f * S, py + 0.05f * S,
+                pz + 0.06f * S - legSwing * 0.4f),
+           vec3(0.13f * S, 0.07f * S, 0.18f * S), COL_PLAYER_SHOE);
 
   if (boost || recovering) {
-    draw_box(fb, cam, basis, vec3(p->position.x, py + 0.07f, p->position.z),
-             vec3(0.35f, 0.05f, 0.7f), COL_BOARD);
+    draw_box(fb, cam, basis, vec3(px, py + 0.07f * S, pz),
+             vec3(0.42f * S, 0.06f * S, 0.82f * S), COL_BOARD);
     draw_box(fb, cam, basis,
-             vec3(p->position.x, py + 0.12f, p->position.z - 0.15f),
-             vec3(0.18f, 0.03f, 0.22f), shade_color(COL_BOARD, 1.2f));
+             vec3(px, py + 0.12f * S, pz - 0.15f * S),
+             vec3(0.22f * S, 0.03f * S, 0.28f * S), COL_BOARD_GLOW);
+    draw_box(fb, cam, basis,
+             vec3(px, py + 0.04f * S, pz + 0.6f * S),
+             vec3(0.14f * S, 0.04f * S, 0.22f * S),
+             shade_color(COL_BOARD_GLOW, 1.2f));
   }
 }
 
@@ -973,10 +1125,14 @@ static void draw_train_car(Framebuffer *fb, const CameraTransform *cam,
   float wz;
   draw_box(fb, cam, basis, vec3(x, bodyY, centerZ),
            vec3(halfW, halfH, halfCar), body);
+  /* Bright SS-style body stripe */
   draw_box(fb, cam, basis, vec3(x, bodyY + halfH * 0.35f, centerZ),
-           vec3(halfW * 1.02f, 0.12f, halfCar * 0.98f), accent);
+           vec3(halfW * 1.02f, 0.14f, halfCar * 0.98f), accent);
   draw_box(fb, cam, basis, vec3(x, bodyY - halfH * 0.45f, centerZ),
-           vec3(halfW * 1.02f, 0.08f, halfCar * 0.98f), accent);
+           vec3(halfW * 1.02f, 0.1f, halfCar * 0.98f), accent);
+  draw_box(fb, cam, basis, vec3(x, bodyY + halfH * 0.05f, centerZ),
+           vec3(halfW * 1.03f, 0.06f, halfCar * 0.9f),
+           shade_color(accent, 1.15f));
   draw_box(fb, cam, basis, vec3(x, bodyY + halfH + 0.08f, centerZ),
            vec3(halfW * 0.78f, 0.1f, halfCar * 0.7f), accent);
   draw_box(fb, cam, basis, vec3(x, bodyY - halfH - 0.12f, centerZ),
@@ -989,6 +1145,10 @@ static void draw_train_car(Framebuffer *fb, const CameraTransform *cam,
     draw_box(fb, cam, basis,
              vec3(x + halfW + 0.02f, bodyY + 0.35f, centerZ + wz),
              vec3(0.04f, 0.28f, 0.5f), COL_TRAIN_WINDOW);
+    /* Window frame highlight */
+    draw_box(fb, cam, basis,
+             vec3(x - halfW - 0.03f, bodyY + 0.55f, centerZ + wz),
+             vec3(0.03f, 0.04f, 0.48f), shade_color(COL_TRAIN_WINDOW, 1.2f));
   }
   draw_box(fb, cam, basis, vec3(x - halfW - 0.02f, bodyY - 0.15f, centerZ),
            vec3(0.04f, 0.55f, 0.45f), COL_TRAIN_METAL);
@@ -1012,6 +1172,9 @@ static void draw_train_car(Framebuffer *fb, const CameraTransform *cam,
     draw_box(fb, cam, basis,
              vec3(x, bodyY + 0.1f, centerZ + halfCar + 0.35f),
              vec3(halfW * 0.85f, halfH * 0.55f, 0.4f), body);
+    draw_box(fb, cam, basis,
+             vec3(x, bodyY + 0.55f, centerZ + halfCar + 0.5f),
+             vec3(halfW * 0.7f, 0.08f, 0.12f), accent);
     draw_box(fb, cam, basis,
              vec3(x - 0.45f, bodyY - 0.2f, centerZ + halfCar + 0.7f),
              vec3(0.14f, 0.1f, 0.06f), COL_TRAIN_LIGHT);
@@ -1120,16 +1283,14 @@ static void draw_entity(Framebuffer *fb, const CameraTransform *cam,
         return;
       }
       {
-        float spin = absf(sinf(time * 7.0f + e->positionZ * 0.35f));
+        float spinAngle = time * 7.0f + e->positionZ * 0.35f;
+        float squash = 0.22f + 0.78f * absf(cosf(spinAngle));
         float bobY = sinf(time * 5.0f + e->positionZ) * 0.08f;
-        float hx = 0.08f + spin * 0.34f;
-        float hz = 0.42f - spin * 0.18f;
         Vec3 center = vec3(b.center.x, b.center.y + bobY, b.center.z);
-        draw_box(fb, cam, basis, center, vec3(hx, 0.42f, hz), COL_COIN);
-        draw_box(fb, cam, basis, center,
-                 vec3(hx * 1.08f, 0.42f, hz * 1.08f * 0.15f + 0.04f), COL_COIN_RIM);
-        draw_box(fb, cam, basis, center, vec3(hx * 0.45f, 0.18f, hz * 0.45f),
-                 COL_COIN_CORE);
+        /* Round spinning coin: rim → body → bright core */
+        draw_billboard_disc(fb, cam, basis, center, 0.48f, squash, COL_COIN_RIM);
+        draw_billboard_disc(fb, cam, basis, center, 0.40f, squash, COL_COIN);
+        draw_billboard_disc(fb, cam, basis, center, 0.18f, squash, COL_COIN_CORE);
       }
       break;
 
@@ -1266,37 +1427,48 @@ static void fill_rect_hud(Framebuffer *fb, int x0, int y0, int x1, int y1,
 
 static void draw_hud(Framebuffer *fb, const GameState *state) {
   char line[96];
-  int y = 10;
+  int y;
   const char *status = NULL;
   float mult = get_multiplier(state->effects, state->effectCount, &state->cheats);
+  int scoreScale = 3;
+  int panelW = 210;
+  int scoreLen;
+  int scoreX;
 
-  fill_rect_hud(fb, 4, 4, 168, 92, COL_HUD_PANEL);
-  fill_rect_hud(fb, fb->width - 118, 4, fb->width - 4, 36, COL_HUD_PANEL);
+  /* Top score — Subway Surfers style: big centered number */
+  sprintf(line, "%d", (int)state->score);
+  scoreLen = (int)strlen(line);
+  scoreX = (fb->width - scoreLen * (5 + 1) * scoreScale) / 2;
+  fill_rect_hud(fb, scoreX - 18, 8, scoreX + scoreLen * (5 + 1) * scoreScale + 18,
+                42, COL_HUD_PANEL_SOFT);
+  draw_text(fb, scoreX, 14, line, COL_HUD, scoreScale);
 
-  sprintf(line, "SCORE %d", (int)state->score);
-  draw_text(fb, 10, y, line, COL_HUD, 2);
-  y += 18;
+  /* Coins panel top-left */
+  fill_rect_hud(fb, 8, 8, 8 + panelW, 78, COL_HUD_PANEL);
+  fill_rect_hud(fb, 8, 8, 14, 78, COL_HUD_GOLD);
   sprintf(line, "COINS %d", state->coins);
-  draw_text(fb, 10, y, line, COL_HUD_GOLD, 2);
-  y += 18;
-  sprintf(line, "DIST %dm", (int)state->distance);
-  draw_text(fb, 10, y, line, COL_HUD_DIM, 2);
-  y += 18;
+  draw_text(fb, 22, 16, line, COL_HUD_GOLD, 2);
   sprintf(line, "BEST %d", (int)state->highScore);
-  draw_text(fb, 10, y, line, COL_HUD_DIM, 2);
+  draw_text(fb, 22, 36, line, COL_HUD_DIM, 2);
+  sprintf(line, "%dm", (int)state->distance);
+  draw_text(fb, 22, 56, line, COL_HUD_DIM, 2);
 
+  /* Board charges top-right */
+  fill_rect_hud(fb, fb->width - 140, 8, fb->width - 8, 48, COL_HUD_PANEL);
+  fill_rect_hud(fb, fb->width - 14, 8, fb->width - 8, 48, COL_BOARD);
   sprintf(line, "BOARD %d", state->boardCharges);
-  draw_text(fb, fb->width - 8 - (int)strlen(line) * 12, 10, line, COL_BOARD, 2);
+  draw_text(fb, fb->width - 128, 18, line, COL_BOARD, 2);
 
   if (mult > 1.01f) {
     sprintf(line, "x%d", (int)(mult + 0.1f));
-    draw_text(fb, fb->width - 8 - (int)strlen(line) * 12, 32, line, COL_MULTIPLIER,
-              2);
+    fill_rect_hud(fb, fb->width - 90, 56, fb->width - 8, 84, COL_HUD_PANEL);
+    draw_text(fb, fb->width - 8 - (int)strlen(line) * 12, 62, line,
+              COL_MULTIPLIER, 2);
   }
 
   if (state->effectCount > 0) {
     int i;
-    int ex = 10;
+    int ex = 22;
     for (i = 0; i < state->effectCount; i++) {
       const char *label = "?";
       uint32_t col = COL_HUD;
@@ -1318,8 +1490,10 @@ static void draw_hud(Framebuffer *fb, const GameState *state) {
           col = COL_BOOST;
           break;
       }
-      draw_text(fb, ex, 100, label, col, 1);
-      ex += (int)strlen(label) * 6 + 10;
+      fill_rect_hud(fb, ex - 4, 88, ex + (int)strlen(label) * 6 + 4, 104,
+                    COL_HUD_PANEL_SOFT);
+      draw_text(fb, ex, 90, label, col, 1);
+      ex += (int)strlen(label) * 6 + 14;
     }
   }
 
@@ -1340,47 +1514,56 @@ static void draw_hud(Framebuffer *fb, const GameState *state) {
 
   if (status != NULL) {
     int len = (int)strlen(status);
-    int tx = (fb->width - len * 12) / 2;
-    int ty = fb->height / 2 - 48;
-    fill_rect_hud(fb, tx - 16, ty - 12, tx + len * 12 + 16, ty + 72, COL_HUD_PANEL);
-    draw_text(fb, tx, ty, status, COL_HUD, 2);
+    int titleScale = 3;
+    int charW = (5 + 1) * titleScale;
+    int tx = (fb->width - len * charW) / 2;
+    int ty = fb->height / 2 - 70;
+    fill_rect_hud(fb, tx - 28, ty - 20, tx + len * charW + 28, ty + 100,
+                  COL_HUD_PANEL);
+    fill_rect_hud(fb, tx - 28, ty - 20, tx - 20, ty + 100, COL_HUD_ACCENT);
+    fill_rect_hud(fb, tx + len * charW + 20, ty - 20, tx + len * charW + 28,
+                  ty + 100, COL_HUD_GOLD);
+    draw_text(fb, tx, ty, status, COL_HUD, titleScale);
     if (state->status.type == STATUS_READY) {
-      draw_text(fb, (fb->width - 22 * 12) / 2, ty + 28,
-                "ENTER TO START", COL_HUD_GOLD, 2);
-      draw_text(fb, 8, fb->height - 40,
+      draw_text(fb, (fb->width - 14 * 12) / 2, ty + 42, "ENTER TO START",
+                COL_HUD_GOLD, 2);
+      draw_text(fb, 16, fb->height - 48,
                 "A/D LANE  W/SPACE JUMP  S SLIDE  P PAUSE", COL_HUD_DIM, 1);
-      draw_text(fb, 8, fb->height - 28,
+      draw_text(fb, 16, fb->height - 32,
                 "M MUTE  ` CHEATS 1-4  5 BOARD 6 COINS 7 SCORE", COL_HUD_DIM,
                 1);
     } else if (state->status.type == STATUS_GAME_OVER) {
-      draw_text(fb, (fb->width - 20 * 12) / 2, ty + 28,
-                "ENTER TO RESTART", COL_HUD_DIM, 2);
+      sprintf(line, "SCORE %d", (int)state->score);
+      draw_text(fb, (fb->width - (int)strlen(line) * 12) / 2, ty + 42, line,
+                COL_HUD_GOLD, 2);
+      draw_text(fb, (fb->width - 16 * 12) / 2, ty + 68, "ENTER TO RESTART",
+                COL_HUD_DIM, 2);
     } else if (state->status.type == STATUS_PAUSED) {
-      draw_text(fb, (fb->width - 16 * 12) / 2, ty + 28, "P TO RESUME",
+      draw_text(fb, (fb->width - 11 * 12) / 2, ty + 42, "P TO RESUME",
                 COL_HUD_DIM, 2);
     }
   }
 
   if (g_show_cheats || is_cheat_active(state->cheats)) {
-    y = 118;
-    draw_text(fb, 8, y, "CHEATS", COL_HUD, 2);
-    y += 18;
+    y = 120;
+    draw_text(fb, 12, y, "CHEATS", COL_HUD, 2);
+    y += 20;
     sprintf(line, "1 IMMORTAL %s", state->cheats.immortal ? "ON" : "OFF");
-    draw_text(fb, 8, y, line, COL_HUD_DIM, 1);
-    y += 10;
+    draw_text(fb, 12, y, line, COL_HUD_DIM, 1);
+    y += 12;
     sprintf(line, "2 MAGNET %s", state->cheats.infiniteMagnet ? "ON" : "OFF");
-    draw_text(fb, 8, y, line, COL_HUD_DIM, 1);
-    y += 10;
+    draw_text(fb, 12, y, line, COL_HUD_DIM, 1);
+    y += 12;
     sprintf(line, "3 MULT %s",
             state->cheats.infiniteMultiplier ? "ON" : "OFF");
-    draw_text(fb, 8, y, line, COL_HUD_DIM, 1);
-    y += 10;
+    draw_text(fb, 12, y, line, COL_HUD_DIM, 1);
+    y += 12;
     sprintf(line, "4 MAXSPD %s", state->cheats.lockMaxSpeed ? "ON" : "OFF");
-    draw_text(fb, 8, y, line, COL_HUD_DIM, 1);
+    draw_text(fb, 12, y, line, COL_HUD_DIM, 1);
   }
 
   if (state->muted) {
-    draw_text(fb, fb->width - 60, 40, "MUTE", COL_HUD_DIM, 1);
+    draw_text(fb, fb->width - 70, 92, "MUTE", COL_HUD_DIM, 1);
   }
 }
 
