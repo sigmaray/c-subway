@@ -305,11 +305,12 @@ static int hash_u32(uint32_t id) {
 static CameraTransform create_initial_camera(const GameState *state) {
   CameraTransform cam;
   Vec3 pos = state->player.position;
-  cam.position = vec3(pos.x * 0.45f + GAME_CONFIG.cameraOffsetX,
-                      pos.y + GAME_CONFIG.cameraOffsetY,
+  /* High behind look-down — runner sits in the lower third like Subway Surfers. */
+  cam.position = vec3(pos.x * 0.9f + GAME_CONFIG.cameraOffsetX,
+                      GAME_CONFIG.cameraOffsetY,
                       pos.z + GAME_CONFIG.cameraOffsetZ);
   cam.target =
-      vec3(pos.x * 0.3f, pos.y + 1.15f, pos.z - GAME_CONFIG.cameraLookAhead);
+      vec3(pos.x * 0.85f, 0.55f, pos.z - GAME_CONFIG.cameraLookAhead);
   cam.fov = GAME_CONFIG.cameraFov;
   return cam;
 }
@@ -319,12 +320,13 @@ static CameraTransform calculate_camera(const GameState *state,
                                         float deltaSeconds) {
   CameraTransform desired;
   Vec3 pos = state->player.position;
-  bool boost = has_effect(state->effects, state->effectCount, POWERUP_BOOST);
-  float jumpLift = pos.y * 0.28f;
+  bool boost = has_effect(state->effects, state->effectCount, POWERUP_BOOST) ||
+               state->cheats.fly;
+  float jumpLift = pos.y * 0.12f;
   float speedDenom;
   float speedT;
-  if (jumpLift > 1.4f) {
-    jumpLift = 1.4f;
+  if (jumpLift > 0.7f) {
+    jumpLift = 0.7f;
   }
   speedDenom = GAME_CONFIG.maximumSpeed - GAME_CONFIG.initialSpeed;
   if (speedDenom < 1.0f) {
@@ -335,27 +337,29 @@ static CameraTransform calculate_camera(const GameState *state,
       GAME_CONFIG.cameraFov +
       (GAME_CONFIG.cameraMaxSpeedFov - GAME_CONFIG.cameraFov) * speedT;
   float lanePunch =
-      ((float)state->player.lane * GAME_CONFIG.laneWidth - pos.x) * 0.12f;
+      ((float)state->player.lane * GAME_CONFIG.laneWidth - pos.x) * 0.06f;
   float shake =
       state->cameraShake * (float)sin((double)state->elapsedSeconds * 48.0) *
-      0.35f;
+      0.28f;
   float shakeY =
       state->cameraShake * (float)cos((double)state->elapsedSeconds * 37.0) *
-      0.2f;
+      0.16f;
   bool gameOver = state->status.type == STATUS_GAME_OVER;
   float lag;
   float t;
 
+  /* Keep the hero centered; slight lag on X so lane swaps feel punchy. */
   desired.position = vec3(
-      pos.x * 0.55f + GAME_CONFIG.cameraOffsetX + lanePunch + shake,
-      pos.y * 0.35f + GAME_CONFIG.cameraOffsetY + jumpLift + shakeY +
-          (boost ? 1.8f : 0.0f) + (gameOver ? 1.5f : 0.0f),
-      pos.z + GAME_CONFIG.cameraOffsetZ - (boost ? 2.2f : 0.0f) +
-          (gameOver ? 2.5f : 0.0f));
+      pos.x * 0.92f + GAME_CONFIG.cameraOffsetX + lanePunch + shake,
+      GAME_CONFIG.cameraOffsetY + pos.y * 0.12f + jumpLift + shakeY +
+          (boost ? 1.2f : 0.0f) + (gameOver ? 1.8f : 0.0f),
+      pos.z + GAME_CONFIG.cameraOffsetZ - (boost ? 1.6f : 0.0f) +
+          (gameOver ? 2.0f : 0.0f));
+  /* Aim low ahead of the runner so rails fill the frame and pitch down ~25°. */
   desired.target =
-      vec3(pos.x * 0.45f + shake * 0.4f,
-           pos.y * 0.4f + 1.25f + (boost ? 1.0f : 0.0f),
-           pos.z - GAME_CONFIG.cameraLookAhead - (boost ? 5.0f : 0.0f));
+      vec3(pos.x * 0.88f + shake * 0.35f,
+           0.45f + pos.y * 0.12f + (boost ? 0.7f : 0.0f),
+           pos.z - GAME_CONFIG.cameraLookAhead - (boost ? 3.5f : 0.0f));
   desired.fov = boost ? GAME_CONFIG.cameraBoostFov : speedFov;
 
   lag = gameOver ? 4.0f : GAME_CONFIG.cameraLag;
@@ -405,6 +409,9 @@ static ViewVert world_to_view(Vec3 world, const CameraTransform *cam,
   return v;
 }
 
+/* Push look-center upward so the runner sits in the lower third (SS framing). */
+#define CAM_FRAME_Y 0.62f
+
 static ProjVert project_view(ViewVert v, const CamBasis *b, int w, int h) {
   ProjVert out;
   float nx, ny;
@@ -418,7 +425,7 @@ static ProjVert project_view(ViewVert v, const CamBasis *b, int w, int h) {
   nx = (v.x / v.z) * b->focal / b->aspect;
   ny = (v.y / v.z) * b->focal;
   out.x = (nx * 0.5f + 0.5f) * (float)w;
-  out.y = (-ny * 0.5f + 0.5f) * (float)h;
+  out.y = (-ny * 0.5f + CAM_FRAME_Y) * (float)h;
   out.valid = 1;
   return out;
 }
@@ -815,11 +822,11 @@ static void draw_sky_props(Framebuffer *fb, const CameraTransform *cam,
   int i;
   int side;
 
-  /* Sun stays in view-space so it never pops. */
-  draw_box(fb, cam, basis, vec3(camX + 18.0f, 26.0f, camZ - 55.0f),
-           vec3(3.4f, 3.4f, 0.4f), COL_SUN);
-  draw_box(fb, cam, basis, vec3(camX + 18.0f, 26.0f, camZ - 54.5f),
-           vec3(5.2f, 5.2f, 0.2f), COL_SUN_GLOW);
+  /* Sun high-right in the portrait sky, Subway Surfers noon look. */
+  draw_box(fb, cam, basis, vec3(camX + 10.0f, 22.0f, camZ - 48.0f),
+           vec3(2.8f, 2.8f, 0.4f), COL_SUN);
+  draw_box(fb, cam, basis, vec3(camX + 10.0f, 22.0f, camZ - 47.5f),
+           vec3(4.4f, 4.4f, 0.2f), COL_SUN_GLOW);
 
   for (c = 0; c < 8; c++) {
     float base = scroll - (float)c * 22.0f - 30.0f;
@@ -843,9 +850,9 @@ static void draw_sky_props(Framebuffer *fb, const CameraTransform *cam,
       float tall = (i % 3 == 0) ? 1.55f : 1.15f + (float)(i % 4) * 0.12f;
       float h = 8.0f * tall;
       draw_box(fb, cam, basis,
-               vec3(sx * (14.5f + (float)(i % 4) * 1.1f),
-                    4.5f + (float)(i % 5) * 0.8f, cz),
-               vec3(2.4f, h * 0.5f, 3.2f), facade);
+               vec3(sx * (11.2f + (float)(i % 4) * 0.9f),
+                    4.0f + (float)(i % 5) * 0.7f, cz),
+               vec3(2.2f, h * 0.5f, 3.0f), facade);
     }
   }
 }
@@ -977,7 +984,8 @@ static void draw_player(Framebuffer *fb, const CameraTransform *cam,
   bool invincible =
       has_effect(state->effects, state->effectCount, POWERUP_INVINCIBLE) ||
       state->cheats.immortal;
-  bool boost = has_effect(state->effects, state->effectCount, POWERUP_BOOST);
+  bool boost = has_effect(state->effects, state->effectCount, POWERUP_BOOST) ||
+               state->cheats.fly;
   bool groundedRun = !sliding && p->movement.type != MOVE_STUNNED &&
                      p->movement.type != MOVE_JUMPING &&
                      p->movement.type != MOVE_FALLING;
@@ -1397,7 +1405,7 @@ static void draw_hud(Framebuffer *fb, const GameState *state) {
   const char *status = NULL;
   float mult = get_multiplier(state->effects, state->effectCount, &state->cheats);
   int scoreScale = 3;
-  int panelW = 210;
+  int panelW = fb->width < 520 ? 150 : 210;
   int scoreLen;
   int scoreX;
 
@@ -1420,10 +1428,10 @@ static void draw_hud(Framebuffer *fb, const GameState *state) {
   draw_text(fb, 22, 56, line, COL_HUD_DIM, 2);
 
   /* Board charges top-right */
-  fill_rect_hud(fb, fb->width - 140, 8, fb->width - 8, 48, COL_HUD_PANEL);
+  fill_rect_hud(fb, fb->width - 118, 8, fb->width - 8, 48, COL_HUD_PANEL);
   fill_rect_hud(fb, fb->width - 14, 8, fb->width - 8, 48, COL_BOARD);
   sprintf(line, "BOARD %d", state->boardCharges);
-  draw_text(fb, fb->width - 128, 18, line, COL_BOARD, 2);
+  draw_text(fb, fb->width - 106, 18, line, COL_BOARD, 2);
 
   if (mult > 1.01f) {
     sprintf(line, "x%d", (int)(mult + 0.1f));
@@ -1493,11 +1501,12 @@ static void draw_hud(Framebuffer *fb, const GameState *state) {
     if (state->status.type == STATUS_READY) {
       draw_text(fb, (fb->width - 14 * 12) / 2, ty + 42, "ENTER TO START",
                 COL_HUD_GOLD, 2);
-      draw_text(fb, 16, fb->height - 48,
-                "A/D LANE  W/SPACE JUMP  S SLIDE  P PAUSE", COL_HUD_DIM, 1);
-      draw_text(fb, 16, fb->height - 32,
-                "M MUTE  ` CHEATS 1-4  5 BOARD 6 COINS 7 SCORE", COL_HUD_DIM,
-                1);
+      draw_text(fb, 16, fb->height - 64, "A/D LANE   W JUMP   S SLIDE",
+                COL_HUD_DIM, 1);
+      draw_text(fb, 16, fb->height - 48, "P PAUSE   M MUTE   ` CHEATS",
+                COL_HUD_DIM, 1);
+      draw_text(fb, 16, fb->height - 32, "1-4 TOGGLE   5 BOARD  6/7 BONUS",
+                COL_HUD_DIM, 1);
     } else if (state->status.type == STATUS_GAME_OVER) {
       sprintf(line, "SCORE %d", (int)state->score);
       draw_text(fb, (fb->width - (int)strlen(line) * 12) / 2, ty + 42, line,
@@ -1517,14 +1526,10 @@ static void draw_hud(Framebuffer *fb, const GameState *state) {
     sprintf(line, "1 IMMORTAL %s", state->cheats.immortal ? "ON" : "OFF");
     draw_text(fb, 12, y, line, COL_HUD_DIM, 1);
     y += 12;
-    sprintf(line, "2 MAGNET %s", state->cheats.infiniteMagnet ? "ON" : "OFF");
+    sprintf(line, "2 MAXSPD %s", state->cheats.maxSpeed ? "ON" : "OFF");
     draw_text(fb, 12, y, line, COL_HUD_DIM, 1);
     y += 12;
-    sprintf(line, "3 MULT %s",
-            state->cheats.infiniteMultiplier ? "ON" : "OFF");
-    draw_text(fb, 12, y, line, COL_HUD_DIM, 1);
-    y += 12;
-    sprintf(line, "4 MAXSPD %s", state->cheats.lockMaxSpeed ? "ON" : "OFF");
+    sprintf(line, "3 FLY %s", state->cheats.fly ? "ON" : "OFF");
     draw_text(fb, 12, y, line, COL_HUD_DIM, 1);
   }
 

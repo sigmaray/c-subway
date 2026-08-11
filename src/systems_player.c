@@ -287,7 +287,8 @@ void update_player(GameState *state, float dt) {
   }
 
   flatCount = flatten_entities(state, flat, MAX_FLATTEN_ENTITIES);
-  boosting = has_effect(state->effects, state->effectCount, POWERUP_BOOST);
+  boosting = has_effect(state->effects, state->effectCount, POWERUP_BOOST) ||
+             state->cheats.fly;
   originalMovement = state->player.movement.type;
   player = state->player;
 

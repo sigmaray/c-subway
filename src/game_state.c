@@ -5,7 +5,7 @@ static uint32_t g_next_entity = 1;
 static uint32_t g_next_segment = 1;
 
 const CheatFlags DEFAULT_CHEATS = {
-  false, false, false, false
+  false, false, false
 };
 
 void reset_identifiers(void) {
@@ -92,16 +92,16 @@ bool has_effect(const ActiveEffect *effects, int count, PowerUpType type) {
 }
 
 float get_multiplier(const ActiveEffect *effects, int count, const CheatFlags *cheats) {
-  if (has_effect(effects, count, POWERUP_MULTIPLIER) ||
-      (cheats != NULL && cheats->infiniteMultiplier)) {
+  (void)cheats;
+  if (has_effect(effects, count, POWERUP_MULTIPLIER)) {
     return 2.0f;
   }
   return 1.0f;
 }
 
 bool is_magnet_active(const ActiveEffect *effects, int count, const CheatFlags *cheats) {
-  return has_effect(effects, count, POWERUP_MAGNET) ||
-         (cheats != NULL && cheats->infiniteMagnet);
+  (void)cheats;
+  return has_effect(effects, count, POWERUP_MAGNET);
 }
 
 CheatFlags toggle_cheat_flag(CheatFlags cheats, CheatId id) {
@@ -109,22 +109,18 @@ CheatFlags toggle_cheat_flag(CheatFlags cheats, CheatId id) {
     case CHEAT_IMMORTAL:
       cheats.immortal = !cheats.immortal;
       break;
-    case CHEAT_INFINITE_MAGNET:
-      cheats.infiniteMagnet = !cheats.infiniteMagnet;
+    case CHEAT_MAX_SPEED:
+      cheats.maxSpeed = !cheats.maxSpeed;
       break;
-    case CHEAT_INFINITE_MULTIPLIER:
-      cheats.infiniteMultiplier = !cheats.infiniteMultiplier;
-      break;
-    case CHEAT_LOCK_MAX_SPEED:
-      cheats.lockMaxSpeed = !cheats.lockMaxSpeed;
+    case CHEAT_FLY:
+      cheats.fly = !cheats.fly;
       break;
   }
   return cheats;
 }
 
 bool is_cheat_active(CheatFlags cheats) {
-  return cheats.immortal || cheats.infiniteMagnet ||
-         cheats.infiniteMultiplier || cheats.lockMaxSpeed;
+  return cheats.immortal || cheats.maxSpeed || cheats.fly;
 }
 
 void create_empty_world(WorldState *out) {

@@ -6,8 +6,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FB_WIDTH 800
-#define FB_HEIGHT 600
+/* Portrait phone frame — classic Subway Surfers overview. */
+#define FB_WIDTH 480
+#define FB_HEIGHT 854
 
 static SaveData save_from_state(const GameState *state) {
   SaveData s;
@@ -21,9 +22,8 @@ static SaveData save_from_state(const GameState *state) {
 static int save_changed(const SaveData *a, const SaveData *b) {
   return a->highScore != b->highScore || a->totalCoins != b->totalCoins ||
          a->muted != b->muted || a->cheats.immortal != b->cheats.immortal ||
-         a->cheats.infiniteMagnet != b->cheats.infiniteMagnet ||
-         a->cheats.infiniteMultiplier != b->cheats.infiniteMultiplier ||
-         a->cheats.lockMaxSpeed != b->cheats.lockMaxSpeed;
+         a->cheats.maxSpeed != b->cheats.maxSpeed ||
+         a->cheats.fly != b->cheats.fly;
 }
 
 static void persist_if_needed(const GameState *state, SaveData *last,

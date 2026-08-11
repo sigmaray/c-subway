@@ -8,7 +8,7 @@
 #include <windows.h>
 #endif
 
-#define SAVE_VERSION 1
+#define SAVE_VERSION 2
 
 static void default_save(SaveData *out) {
   memset(out, 0, sizeof(*out));
@@ -58,9 +58,8 @@ void storage_load(SaveData *out) {
   int version = 0;
   int muted = 0;
   int immortal = 0;
-  int infiniteMagnet = 0;
-  int infiniteMultiplier = 0;
-  int lockMaxSpeed = 0;
+  int maxSpeed = 0;
+  int fly = 0;
   float highScore = 0.0f;
   int totalCoins = 0;
 
@@ -99,15 +98,11 @@ void storage_load(SaveData *out) {
     fclose(f);
     return;
   }
-  if (fscanf(f, "infiniteMagnet %d\n", &infiniteMagnet) != 1) {
+  if (fscanf(f, "maxSpeed %d\n", &maxSpeed) != 1) {
     fclose(f);
     return;
   }
-  if (fscanf(f, "infiniteMultiplier %d\n", &infiniteMultiplier) != 1) {
-    fclose(f);
-    return;
-  }
-  if (fscanf(f, "lockMaxSpeed %d\n", &lockMaxSpeed) != 1) {
+  if (fscanf(f, "fly %d\n", &fly) != 1) {
     fclose(f);
     return;
   }
@@ -117,9 +112,8 @@ void storage_load(SaveData *out) {
   out->totalCoins = totalCoins;
   out->muted = muted != 0;
   out->cheats.immortal = immortal != 0;
-  out->cheats.infiniteMagnet = infiniteMagnet != 0;
-  out->cheats.infiniteMultiplier = infiniteMultiplier != 0;
-  out->cheats.lockMaxSpeed = lockMaxSpeed != 0;
+  out->cheats.maxSpeed = maxSpeed != 0;
+  out->cheats.fly = fly != 0;
 }
 
 void storage_save(const SaveData *data) {
@@ -138,9 +132,7 @@ void storage_save(const SaveData *data) {
   fprintf(f, "totalCoins %d\n", data->totalCoins);
   fprintf(f, "muted %d\n", data->muted ? 1 : 0);
   fprintf(f, "immortal %d\n", data->cheats.immortal ? 1 : 0);
-  fprintf(f, "infiniteMagnet %d\n", data->cheats.infiniteMagnet ? 1 : 0);
-  fprintf(f, "infiniteMultiplier %d\n",
-          data->cheats.infiniteMultiplier ? 1 : 0);
-  fprintf(f, "lockMaxSpeed %d\n", data->cheats.lockMaxSpeed ? 1 : 0);
+  fprintf(f, "maxSpeed %d\n", data->cheats.maxSpeed ? 1 : 0);
+  fprintf(f, "fly %d\n", data->cheats.fly ? 1 : 0);
   fclose(f);
 }

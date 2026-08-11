@@ -198,16 +198,9 @@ typedef enum MovementType {
 
 typedef enum CheatId {
   CHEAT_IMMORTAL = 0,
-  CHEAT_INFINITE_MAGNET,
-  CHEAT_INFINITE_MULTIPLIER,
-  CHEAT_LOCK_MAX_SPEED
+  CHEAT_MAX_SPEED,
+  CHEAT_FLY
 } CheatId;
-
-typedef enum CheatAction {
-  CHEAT_ACTION_REFILL_BOARD = 0,
-  CHEAT_ACTION_ADD_COINS,
-  CHEAT_ACTION_ADD_SCORE
-} CheatAction;
 
 typedef enum CommandType {
   CMD_MOVE_LEFT = 0,
@@ -218,8 +211,7 @@ typedef enum CommandType {
   CMD_PAUSE,
   CMD_RESTART,
   CMD_TOGGLE_MUTE,
-  CMD_TOGGLE_CHEAT,
-  CMD_CHEAT_ACTION
+  CMD_TOGGLE_CHEAT
 } CommandType;
 
 typedef enum GameEventType {
@@ -312,9 +304,8 @@ typedef struct ActiveEffect {
 
 typedef struct CheatFlags {
   bool immortal;
-  bool infiniteMagnet;
-  bool infiniteMultiplier;
-  bool lockMaxSpeed;
+  bool maxSpeed;
+  bool fly;
 } CheatFlags;
 
 typedef struct GameEvent {
@@ -330,7 +321,6 @@ typedef struct GameEvent {
 typedef struct GameCommand {
   CommandType type;
   CheatId     cheatId;
-  CheatAction cheatAction;
 } GameCommand;
 
 typedef struct InputState {

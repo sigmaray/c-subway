@@ -38,7 +38,7 @@ void update_difficulty(GameState *state, float dt) {
     return;
   }
 
-  if (state->cheats.lockMaxSpeed) {
+  if (state->cheats.maxSpeed) {
     state->speed = GAME_CONFIG.maximumSpeed;
     return;
   }

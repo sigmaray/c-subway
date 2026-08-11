@@ -1,9 +1,6 @@
 #include "metro.h"
 #include <string.h>
 
-#define CHEAT_COIN_GRANT  50
-#define CHEAT_SCORE_GRANT 1000
-
 static void start_run(GameState *state) {
   GameEvent ev;
   state->status.type = STATUS_RUNNING;
@@ -49,19 +46,6 @@ static void apply_command(GameState *state, GameCommand command) {
       return;
     case CMD_TOGGLE_CHEAT:
       state->cheats = toggle_cheat_flag(state->cheats, command.cheatId);
-      return;
-    case CMD_CHEAT_ACTION:
-      switch (command.cheatAction) {
-        case CHEAT_ACTION_REFILL_BOARD:
-          state->boardCharges = GAME_CONFIG.boardChargesPerRun;
-          return;
-        case CHEAT_ACTION_ADD_COINS:
-          state->coins += CHEAT_COIN_GRANT;
-          return;
-        case CHEAT_ACTION_ADD_SCORE:
-          state->score += (float)CHEAT_SCORE_GRANT;
-          return;
-      }
       return;
     case CMD_RESTART:
       if (state->status.type == STATUS_READY) {
@@ -142,7 +126,8 @@ static void apply_command(GameState *state, GameCommand command) {
     case CMD_SLIDE: {
       bool canSlideFromRun;
       bool canDiveSlide;
-      if (has_effect(state->effects, state->effectCount, POWERUP_BOOST)) {
+      if (has_effect(state->effects, state->effectCount, POWERUP_BOOST) ||
+          state->cheats.fly) {
         return;
       }
       if (state->player.movement.type == MOVE_SLIDING) {

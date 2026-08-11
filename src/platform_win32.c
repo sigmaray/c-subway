@@ -50,17 +50,6 @@ static void push_cheat(InputState *input, CheatId id) {
   input->commands[input->count++] = cmd;
 }
 
-static void push_cheat_action(InputState *input, CheatAction action) {
-  GameCommand cmd;
-  if (input->count >= MAX_COMMANDS) {
-    return;
-  }
-  memset(&cmd, 0, sizeof(cmd));
-  cmd.type = CMD_CHEAT_ACTION;
-  cmd.cheatAction = action;
-  input->commands[input->count++] = cmd;
-}
-
 static void handle_vk(WPARAM vk, InputState *input) {
   switch (vk) {
     case 'A':
@@ -100,27 +89,11 @@ static void handle_vk(WPARAM vk, InputState *input) {
       break;
     case '2':
     case VK_NUMPAD2:
-      push_cheat(input, CHEAT_INFINITE_MAGNET);
+      push_cheat(input, CHEAT_MAX_SPEED);
       break;
     case '3':
     case VK_NUMPAD3:
-      push_cheat(input, CHEAT_INFINITE_MULTIPLIER);
-      break;
-    case '4':
-    case VK_NUMPAD4:
-      push_cheat(input, CHEAT_LOCK_MAX_SPEED);
-      break;
-    case '5':
-    case VK_NUMPAD5:
-      push_cheat_action(input, CHEAT_ACTION_REFILL_BOARD);
-      break;
-    case '6':
-    case VK_NUMPAD6:
-      push_cheat_action(input, CHEAT_ACTION_ADD_COINS);
-      break;
-    case '7':
-    case VK_NUMPAD7:
-      push_cheat_action(input, CHEAT_ACTION_ADD_SCORE);
+      push_cheat(input, CHEAT_FLY);
       break;
     default:
       break;

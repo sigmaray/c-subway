@@ -50,17 +50,6 @@ static void push_cheat(InputState *input, CheatId id) {
   input->commands[input->count++] = cmd;
 }
 
-static void push_cheat_action(InputState *input, CheatAction action) {
-  GameCommand cmd;
-  if (input->count >= MAX_COMMANDS) {
-    return;
-  }
-  memset(&cmd, 0, sizeof(cmd));
-  cmd.type = CMD_CHEAT_ACTION;
-  cmd.cheatAction = action;
-  input->commands[input->count++] = cmd;
-}
-
 static void handle_key(KeySym key, InputState *input) {
   switch (key) {
     case XK_a:
@@ -107,27 +96,11 @@ static void handle_key(KeySym key, InputState *input) {
       break;
     case XK_2:
     case XK_KP_2:
-      push_cheat(input, CHEAT_INFINITE_MAGNET);
+      push_cheat(input, CHEAT_MAX_SPEED);
       break;
     case XK_3:
     case XK_KP_3:
-      push_cheat(input, CHEAT_INFINITE_MULTIPLIER);
-      break;
-    case XK_4:
-    case XK_KP_4:
-      push_cheat(input, CHEAT_LOCK_MAX_SPEED);
-      break;
-    case XK_5:
-    case XK_KP_5:
-      push_cheat_action(input, CHEAT_ACTION_REFILL_BOARD);
-      break;
-    case XK_6:
-    case XK_KP_6:
-      push_cheat_action(input, CHEAT_ACTION_ADD_COINS);
-      break;
-    case XK_7:
-    case XK_KP_7:
-      push_cheat_action(input, CHEAT_ACTION_ADD_SCORE);
+      push_cheat(input, CHEAT_FLY);
       break;
     default:
       break;
