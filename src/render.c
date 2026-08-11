@@ -9,17 +9,38 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-#define SKY_COLOR 0xFF4FC3F7u
+#define SKY_TOP 0xFF2B9FE8u
+#define SKY_HORIZON 0xFFB8E8FFu
+#define FOG_COLOR 0xFF81D4FAu
+#define COL_SUN 0xFFFFF3B0u
+#define COL_SUN_GLOW 0xFFFFE082u
+#define COL_CLOUD 0xFFFFFFF5u
 #define COL_PLAYER 0xFFFF1E4Du
 #define COL_PLAYER_ACCENT 0xFF2563EBu
 #define COL_PLAYER_SKIN 0xFFFFC29Au
 #define COL_PLAYER_SHOE 0xFFFBBF24u
+#define COL_PLAYER_HAIR 0xFF292524u
+#define COL_PLAYER_GOGGLE 0xFF67E8F9u
+#define COL_PLAYER_PACK 0xFF0284C7u
+#define COL_PLAYER_SCARF 0xFFFF8A00u
+#define COL_PLAYER_STRIPE 0xFFFFFFFFu
+#define COL_BOARD 0xFF06B6D4u
 #define COL_BARRIER 0xFFFFCC00u
-#define COL_LOW_BARRIER 0xFFFFCC00u
+#define COL_BARRIER_ACCENT 0xFF111827u
 #define COL_OVERHEAD 0xFFA855F7u
+#define COL_OVERHEAD_POST 0xFF334155u
+#define COL_OVERHEAD_LIGHT 0xFFFEF3C7u
 #define COL_CRATE 0xFFC2410Cu
+#define COL_CRATE_STRIPE 0xFFFFCC00u
 #define COL_TRAIN 0xFF22C1F0u
+#define COL_TRAIN_ACCENT 0xFFFF8A3Du
+#define COL_TRAIN_WINDOW 0xFFE8F7FFu
+#define COL_TRAIN_WHEEL 0xFF0F172Au
+#define COL_TRAIN_METAL 0xFF64748Bu
+#define COL_TRAIN_LIGHT 0xFFFFF7EDu
 #define COL_COIN 0xFFFFD60Au
+#define COL_COIN_RIM 0xFFF59E0Bu
+#define COL_COIN_CORE 0xFFFFF3A0u
 #define COL_MAGNET 0xFF38BDF8u
 #define COL_MULTIPLIER 0xFFFFCC00u
 #define COL_INVINCIBLE 0xFFD8B4FEu
@@ -27,20 +48,42 @@
 #define COL_LAMP 0xFF475569u
 #define COL_LAMP_GLOW 0xFFFFF7EDu
 #define COL_SIGN 0xFF22D3EEu
+#define COL_SIGN_ALT 0xFFFF4D9Au
 #define COL_PILLAR 0xFFA8A29Eu
 #define COL_TRACK 0xFF6B5B4Au
 #define COL_TRACK_CENTER 0xFF564737u
 #define COL_BALLAST 0xFF8A7A66u
-#define COL_RAIL 0xFFE8E8E8u
+#define COL_RAIL 0xFFFFFFFFu
 #define COL_SLEEPER 0xFF6B3F1Du
 #define COL_PLATFORM 0xFFB0BEC8u
 #define COL_PLATFORM_TOP 0xFFE8EEF3u
 #define COL_PLATFORM_EDGE 0xFFFFCC00u
 #define COL_WALL 0xFF90A4AEu
 #define COL_WALL_TRIM 0xFFFF7A18u
+#define COL_WALL_CAP 0xFFD7E0E8u
+#define COL_BILLBOARD 0xFFFF4D9Au
+#define COL_BILLBOARD_ALT 0xFF4ADE80u
+#define COL_BILLBOARD_FRAME 0xFF1E293Bu
+#define COL_AWNING 0xFFFF2D55u
+#define COL_BUILDING_ACCENT 0xFFFFE566u
+#define COL_BUILDING_ACCENT_COOL 0xFFA5E4FFu
+#define COL_BUILDING_ACCENT_WARM 0xFFFFB4C4u
 #define COL_HUD 0xFFFFFFFFu
 #define COL_HUD_DIM 0xFFE2E8F0u
 #define COL_HUD_OUTLINE 0xFF0F172Au
+#define COL_HUD_PANEL 0xCC0F172Au
+#define COL_HUD_GOLD 0xFFFFD60Au
+
+static const uint32_t BUILDING_PALETTE[] = {
+    0xFFFFC8B5u, 0xFFFF6B8Au, 0xFF5EEAD4u, 0xFFC4B5FDu, 0xFFFFE08Au,
+    0xFF2DD4BFu, 0xFFFF9AAFu, 0xFF7DD3FCu, 0xFFFFF4E0u};
+
+static const uint32_t TRAIN_BODY[] = {
+    0xFFFF2D6Au, 0xFF22C55Eu, 0xFFFF7A18u, 0xFF6366F1u,
+    0xFF14B8A6u, 0xFFE11D48u, 0xFF22C1F0u};
+static const uint32_t TRAIN_ACCENT[] = {
+    0xFFFFF1C2u, 0xFF1E3A8Au, 0xFF38BDF8u, 0xFFFF4D6Du,
+    0xFFFFCC00u, 0xFFFFFFFFu, 0xFFFF8A3Du};
 
 typedef struct CameraTransform {
   Vec3 position;
@@ -206,7 +249,7 @@ static uint32_t shade_color(uint32_t argb, float intensity) {
   int r = (int)((argb >> 16) & 0xFFu);
   int g = (int)((argb >> 8) & 0xFFu);
   int b = (int)(argb & 0xFFu);
-  float t = clampf(intensity, 0.15f, 1.0f);
+  float t = clampf(intensity, 0.18f, 1.15f);
   r = (int)(r * t);
   g = (int)(g * t);
   b = (int)(b * t);
@@ -220,6 +263,34 @@ static uint32_t shade_color(uint32_t argb, float intensity) {
     b = 255;
   }
   return 0xFF000000u | ((uint32_t)r << 16) | ((uint32_t)g << 8) | (uint32_t)b;
+}
+
+static uint32_t lerp_color(uint32_t a, uint32_t b, float t) {
+  int ar = (int)((a >> 16) & 0xFFu);
+  int ag = (int)((a >> 8) & 0xFFu);
+  int ab = (int)(a & 0xFFu);
+  int br = (int)((b >> 16) & 0xFFu);
+  int bg = (int)((b >> 8) & 0xFFu);
+  int bb = (int)(b & 0xFFu);
+  float u = clampf(t, 0.0f, 1.0f);
+  int r = (int)(ar + (br - ar) * u);
+  int g = (int)(ag + (bg - ag) * u);
+  int bl = (int)(ab + (bb - ab) * u);
+  return 0xFF000000u | ((uint32_t)r << 16) | ((uint32_t)g << 8) | (uint32_t)bl;
+}
+
+static uint32_t apply_fog(uint32_t color, float depth) {
+  float t = (depth - 28.0f) / 110.0f;
+  return lerp_color(color, FOG_COLOR, clampf(t, 0.0f, 0.82f));
+}
+
+static int hash_u32(uint32_t id) {
+  id ^= id >> 16;
+  id *= 0x7feb352du;
+  id ^= id >> 15;
+  id *= 0x846ca68bu;
+  id ^= id >> 16;
+  return (int)(id & 0x7fffffffu);
 }
 
 static CameraTransform create_initial_camera(const GameState *state) {
@@ -387,10 +458,18 @@ static void ensure_zbuf(int w, int h) {
 }
 
 static void clear_framebuffer(Framebuffer *fb) {
+  int x, y;
   int n = fb->width * fb->height;
   int i;
-  for (i = 0; i < n; i++) {
-    fb->pixels[i] = SKY_COLOR;
+  for (y = 0; y < fb->height; y++) {
+    float t = (float)y / (float)(fb->height > 1 ? fb->height - 1 : 1);
+    /* Soft Subway-style sky: deep blue above, bright horizon below. */
+    float curve = t * t * (3.0f - 2.0f * t);
+    uint32_t row = lerp_color(SKY_TOP, SKY_HORIZON, curve);
+    uint32_t *line = fb->pixels + y * fb->width;
+    for (x = 0; x < fb->width; x++) {
+      line[x] = row;
+    }
   }
   if (g_zbuf != NULL) {
     for (i = 0; i < n; i++) {
@@ -526,8 +605,15 @@ static void draw_box(Framebuffer *fb, const CameraTransform *cam,
     if (facing <= 0.0f) {
       continue;
     }
-    intensity = 0.35f + 0.65f * maxf(0.0f, v3_dot(n, light));
+    intensity = 0.42f + 0.72f * maxf(0.0f, v3_dot(n, light));
     shaded = shade_color(color, intensity);
+    {
+      Vec3 delta = v3_sub(faceCenter, cam->position);
+      float depth =
+          (float)sqrt((double)(delta.x * delta.x + delta.y * delta.y +
+                               delta.z * delta.z));
+      shaded = apply_fog(shaded, depth);
+    }
 
     poly[0] = view[faces[f][0]];
     poly[1] = view[faces[f][1]];
@@ -553,13 +639,118 @@ static void draw_box(Framebuffer *fb, const CameraTransform *cam,
   }
 }
 
+static void draw_building(Framebuffer *fb, const CameraTransform *cam,
+                          const CamBasis *basis, float side, float z,
+                          int seed) {
+  static const float heights[] = {9.5f, 14.5f, 7.2f, 11.0f};
+  static const float widths[] = {4.8f, 3.6f, 6.8f, 2.8f};
+  static const float depths[] = {5.5f, 5.0f, 5.8f, 4.8f};
+  int shape = ((seed % 4) + 4) % 4;
+  int seedPos = (seed < 0) ? -seed : seed;
+  float h = heights[shape] * (0.88f + (float)(seedPos % 3) * 0.08f);
+  float w = widths[shape];
+  float d = depths[shape];
+  float x = side * (9.2f + (float)(seedPos % 2) * 0.45f);
+  float baseY = h * 0.5f;
+  uint32_t facade = BUILDING_PALETTE[seedPos % 9];
+  uint32_t accent = (seedPos % 3 == 0)   ? COL_BUILDING_ACCENT
+                    : (seedPos % 3 == 1) ? COL_BUILDING_ACCENT_COOL
+                                         : COL_BUILDING_ACCENT_WARM;
+  int band;
+
+  draw_box(fb, cam, basis, vec3(x, baseY, z), vec3(w * 0.5f, h * 0.5f, d * 0.5f),
+           facade);
+  for (band = 0; band < 4; band++) {
+    float by = 1.5f + (float)band * (shape == 1 ? 2.7f : 1.85f);
+    if (by > h - 0.8f) {
+      break;
+    }
+    draw_box(fb, cam, basis, vec3(x, by, z),
+             vec3(w * 0.46f, 0.22f, d * 0.46f), accent);
+  }
+  if (seedPos % 2 == 0) {
+    draw_box(fb, cam, basis, vec3(x + side * 0.8f, h + 0.6f, z),
+             vec3(0.55f, 0.7f, 0.55f), COL_WALL_TRIM);
+  }
+  if (seedPos % 3 == 0) {
+    draw_box(fb, cam, basis, vec3(x + side * -1.5f, 2.5f, z),
+             vec3(1.4f, 0.1f, 0.7f), COL_AWNING);
+  }
+}
+
+/* Keep a repeating Z coordinate locked to the camera so props never pop. */
+static float wrap_z_near_camera(float preferredZ, float camZ, float nearZ,
+                                float span) {
+  float z = preferredZ;
+  if (span < 1.0f) {
+    return preferredZ;
+  }
+  while (z > camZ + nearZ) {
+    z -= span;
+  }
+  while (z < camZ + nearZ - span) {
+    z += span;
+  }
+  return z;
+}
+
+static void draw_sky_props(Framebuffer *fb, const CameraTransform *cam,
+                           const CamBasis *basis, const GameState *state) {
+  const float cloudSpan = 176.0f;
+  const float skylineSpan = 160.0f;
+  float camZ = cam->position.z;
+  float camX = cam->position.x;
+  float scroll = state->player.position.z * 0.42f;
+  int c;
+  int i;
+  int side;
+
+  /* Sun stays in view-space so it never pops. */
+  draw_box(fb, cam, basis, vec3(camX + 18.0f, 26.0f, camZ - 55.0f),
+           vec3(3.4f, 3.4f, 0.4f), COL_SUN);
+  draw_box(fb, cam, basis, vec3(camX + 18.0f, 26.0f, camZ - 54.5f),
+           vec3(5.2f, 5.2f, 0.2f), COL_SUN_GLOW);
+
+  for (c = 0; c < 8; c++) {
+    float base = scroll - (float)c * 22.0f - 30.0f;
+    float cz = wrap_z_near_camera(base, camZ, -20.0f, cloudSpan);
+    float cx = ((float)(c % 5) - 2.0f) * 10.0f + state->player.position.x * 0.05f;
+    float cy = 15.0f + (float)(c % 3) * 2.0f;
+    float sx = 2.2f + (float)(c % 3) * 0.7f;
+    draw_box(fb, cam, basis, vec3(cx, cy, cz), vec3(sx, 0.7f, 1.0f), COL_CLOUD);
+    draw_box(fb, cam, basis, vec3(cx - sx * 0.55f, cy - 0.15f, cz),
+             vec3(sx * 0.55f, 0.55f, 0.85f), COL_CLOUD);
+    draw_box(fb, cam, basis, vec3(cx + sx * 0.5f, cy + 0.1f, cz),
+             vec3(sx * 0.45f, 0.5f, 0.8f), COL_CLOUD);
+  }
+
+  for (i = 0; i < 10; i++) {
+    for (side = -1; side <= 1; side += 2) {
+      float sx = (float)side;
+      float base = scroll - (float)i * 16.0f - 24.0f;
+      float cz = wrap_z_near_camera(base, camZ, -18.0f, skylineSpan);
+      uint32_t facade = BUILDING_PALETTE[(i + (side > 0 ? 4 : 0)) % 9];
+      float tall = (i % 3 == 0) ? 1.55f : 1.15f + (float)(i % 4) * 0.12f;
+      float h = 8.0f * tall;
+      draw_box(fb, cam, basis,
+               vec3(sx * (14.5f + (float)(i % 4) * 1.1f),
+                    4.5f + (float)(i % 5) * 0.8f, cz),
+               vec3(2.4f, h * 0.5f, 3.2f), facade);
+    }
+  }
+}
+
 static void draw_ground(Framebuffer *fb, const CameraTransform *cam,
                         const CamBasis *basis, const GameState *state) {
   float laneW = GAME_CONFIG.laneWidth;
   const float spacing = 2.0f;
   const float stripLen = 4.0f;
+  const float buildingStep = 12.0f;
+  const float billboardStep = 16.0f;
   float halfLen = stripLen * 0.5f;
   float gridZ;
+  float decorStart;
+  float bz;
   int strip;
   int laneIdx;
   int side;
@@ -587,10 +778,14 @@ static void draw_ground(Framebuffer *fb, const CameraTransform *cam,
                vec3(1.675f, 0.04f, halfLen), COL_PLATFORM_TOP);
       draw_box(fb, cam, basis, vec3(sx * 4.35f, 0.62f, zMid),
                vec3(0.14f, 0.07f, halfLen), COL_PLATFORM_EDGE);
+      draw_box(fb, cam, basis, vec3(sx * 4.55f, 0.52f, zMid),
+               vec3(0.08f, 0.05f, halfLen), COL_PLATFORM_EDGE);
       draw_box(fb, cam, basis, vec3(sx * 7.35f, 2.0f, zMid),
                vec3(0.225f, 2.1f, halfLen), COL_WALL);
       draw_box(fb, cam, basis, vec3(sx * 7.35f, 0.65f, zMid),
                vec3(0.24f, 0.14f, halfLen), COL_WALL_TRIM);
+      draw_box(fb, cam, basis, vec3(sx * 7.35f, 4.05f, zMid),
+               vec3(0.28f, 0.11f, halfLen), COL_WALL_CAP);
     }
 
     for (laneIdx = 0; laneIdx < 3; laneIdx++) {
@@ -612,6 +807,32 @@ static void draw_ground(Framebuffer *fb, const CameraTransform *cam,
       }
     }
   }
+
+  /* Side city props use a fixed world grid so they never reshuffle with strip indices. */
+  decorStart =
+      (float)floor((double)((cam->position.z + 4.0f) / buildingStep)) * buildingStep;
+  for (bz = decorStart; bz > cam->position.z - 150.0f; bz -= buildingStep) {
+    int cell = (int)floor((double)(-bz / buildingStep));
+    for (side = -1; side <= 1; side += 2) {
+      draw_building(fb, cam, basis, (float)side, bz, cell * 11 + side * 5 + 4);
+    }
+  }
+
+  decorStart =
+      (float)floor((double)((cam->position.z + 4.0f) / billboardStep)) *
+      billboardStep;
+  for (bz = decorStart; bz > cam->position.z - 150.0f; bz -= billboardStep) {
+    int cell = (int)floor((double)(-bz / billboardStep));
+    for (side = -1; side <= 1; side += 2) {
+      float sx = (float)side;
+      uint32_t board =
+          ((cell + side) & 1) == 0 ? COL_BILLBOARD : COL_BILLBOARD_ALT;
+      draw_box(fb, cam, basis, vec3(sx * 7.55f, 2.35f, bz),
+               vec3(0.06f, 1.0f, 1.1f), COL_BILLBOARD_FRAME);
+      draw_box(fb, cam, basis, vec3(sx * 7.62f, 2.35f, bz),
+               vec3(0.05f, 0.9f, 0.95f), board);
+    }
+  }
 }
 
 static void draw_player(Framebuffer *fb, const CameraTransform *cam,
@@ -620,6 +841,8 @@ static void draw_player(Framebuffer *fb, const CameraTransform *cam,
   float bob = 0.0f;
   float py;
   float bodyH;
+  float armSwing = 0.0f;
+  float legSwing = 0.0f;
   uint32_t bodyColor = COL_PLAYER;
   bool sliding = player_is_sliding(p);
   bool recovering = player_is_board_recovering(p);
@@ -627,15 +850,19 @@ static void draw_player(Framebuffer *fb, const CameraTransform *cam,
       has_effect(state->effects, state->effectCount, POWERUP_INVINCIBLE) ||
       state->cheats.immortal;
   bool boost = has_effect(state->effects, state->effectCount, POWERUP_BOOST);
+  bool groundedRun = !sliding && p->movement.type != MOVE_STUNNED &&
+                     p->movement.type != MOVE_JUMPING &&
+                     p->movement.type != MOVE_FALLING;
 
   if (recovering && ((int)(state->elapsedSeconds * 14.0f) & 1) == 0) {
     return;
   }
 
-  if (!sliding && p->movement.type != MOVE_STUNNED &&
-      p->movement.type != MOVE_JUMPING && p->movement.type != MOVE_FALLING) {
-    bob = absf(sinf(state->elapsedSeconds * (11.0f + state->speed * 0.4f))) *
-          0.06f;
+  if (groundedRun) {
+    float phase = state->elapsedSeconds * (11.0f + state->speed * 0.4f);
+    bob = absf(sinf(phase)) * 0.06f;
+    armSwing = sinf(phase) * 0.18f;
+    legSwing = sinf(phase) * 0.14f;
   }
   py = p->position.y + bob + ((boost || recovering) ? 0.12f : 0.0f);
 
@@ -644,48 +871,84 @@ static void draw_player(Framebuffer *fb, const CameraTransform *cam,
   } else if (boost || recovering) {
     bodyColor = COL_BOOST;
   } else if (sliding) {
-    bodyColor = shade_color(COL_PLAYER, 0.85f);
+    bodyColor = shade_color(COL_PLAYER, 0.9f);
   }
 
   bodyH = sliding ? 0.35f : 0.55f;
   /* torso */
   draw_box(fb, cam, basis,
            vec3(p->position.x, py + (sliding ? 0.35f : 0.78f), p->position.z),
-           vec3(0.28f, bodyH * 0.5f, 0.22f), bodyColor);
+           vec3(0.29f, bodyH * 0.5f, 0.22f), bodyColor);
+  /* white chest stripe */
+  if (!sliding) {
+    draw_box(fb, cam, basis,
+             vec3(p->position.x, py + 0.88f, p->position.z + 0.01f),
+             vec3(0.3f, 0.07f, 0.23f), COL_PLAYER_STRIPE);
+  }
+  /* backpack */
+  draw_box(fb, cam, basis,
+           vec3(p->position.x, py + (sliding ? 0.42f : 0.88f),
+                p->position.z - 0.28f),
+           vec3(0.2f, 0.23f, 0.11f), COL_PLAYER_PACK);
+  /* scarf */
+  draw_box(fb, cam, basis,
+           vec3(p->position.x, py + (sliding ? 0.58f : 1.08f),
+                p->position.z + 0.14f),
+           vec3(0.24f, 0.06f, 0.09f), COL_PLAYER_SCARF);
   /* head */
   draw_box(fb, cam, basis,
-           vec3(p->position.x, py + (sliding ? 0.75f : 1.35f), p->position.z),
-           vec3(0.18f, 0.18f, 0.18f), COL_PLAYER_SKIN);
+           vec3(p->position.x, py + (sliding ? 0.75f : 1.42f), p->position.z),
+           vec3(0.22f, 0.22f, 0.22f), COL_PLAYER_SKIN);
+  /* hair */
+  draw_box(fb, cam, basis,
+           vec3(p->position.x, py + (sliding ? 0.92f : 1.6f),
+                p->position.z - 0.04f),
+           vec3(0.24f, 0.09f, 0.2f), COL_PLAYER_HAIR);
+  /* cap */
+  draw_box(fb, cam, basis,
+           vec3(p->position.x, py + (sliding ? 0.98f : 1.66f), p->position.z),
+           vec3(0.24f, 0.06f, 0.23f), COL_PLAYER_ACCENT);
+  /* goggles */
+  draw_box(fb, cam, basis,
+           vec3(p->position.x, py + (sliding ? 0.78f : 1.44f),
+                p->position.z + 0.2f),
+           vec3(0.24f, 0.07f, 0.06f), COL_PLAYER_GOGGLE);
   /* arms */
   draw_box(fb, cam, basis,
-           vec3(p->position.x - 0.38f, py + (sliding ? 0.4f : 0.8f),
+           vec3(p->position.x - 0.4f, py + (sliding ? 0.4f : 0.84f) + armSwing,
                 p->position.z),
-           vec3(0.08f, 0.28f, 0.08f), COL_PLAYER_ACCENT);
+           vec3(0.09f, 0.28f, 0.09f), COL_PLAYER_ACCENT);
   draw_box(fb, cam, basis,
-           vec3(p->position.x + 0.38f, py + (sliding ? 0.4f : 0.8f),
+           vec3(p->position.x + 0.4f, py + (sliding ? 0.4f : 0.84f) - armSwing,
                 p->position.z),
-           vec3(0.08f, 0.28f, 0.08f), COL_PLAYER_ACCENT);
+           vec3(0.09f, 0.28f, 0.09f), COL_PLAYER_ACCENT);
   /* legs */
   draw_box(fb, cam, basis,
-           vec3(p->position.x - 0.14f, py + (sliding ? 0.12f : 0.28f),
-                p->position.z),
+           vec3(p->position.x - 0.16f,
+                py + (sliding ? 0.12f : 0.28f) - legSwing * 0.3f,
+                p->position.z + legSwing * 0.4f),
            vec3(0.09f, 0.22f, 0.09f), COL_PLAYER_ACCENT);
   draw_box(fb, cam, basis,
-           vec3(p->position.x + 0.14f, py + (sliding ? 0.12f : 0.28f),
-                p->position.z),
+           vec3(p->position.x + 0.16f,
+                py + (sliding ? 0.12f : 0.28f) + legSwing * 0.3f,
+                p->position.z - legSwing * 0.4f),
            vec3(0.09f, 0.22f, 0.09f), COL_PLAYER_ACCENT);
   /* shoes */
   draw_box(fb, cam, basis,
-           vec3(p->position.x - 0.14f, py + 0.05f, p->position.z + 0.06f),
-           vec3(0.1f, 0.05f, 0.14f), COL_PLAYER_SHOE);
+           vec3(p->position.x - 0.16f, py + 0.05f,
+                p->position.z + 0.06f + legSwing * 0.4f),
+           vec3(0.12f, 0.06f, 0.16f), COL_PLAYER_SHOE);
   draw_box(fb, cam, basis,
-           vec3(p->position.x + 0.14f, py + 0.05f, p->position.z + 0.06f),
-           vec3(0.1f, 0.05f, 0.14f), COL_PLAYER_SHOE);
+           vec3(p->position.x + 0.16f, py + 0.05f,
+                p->position.z + 0.06f - legSwing * 0.4f),
+           vec3(0.12f, 0.06f, 0.16f), COL_PLAYER_SHOE);
 
   if (boost || recovering) {
+    draw_box(fb, cam, basis, vec3(p->position.x, py + 0.07f, p->position.z),
+             vec3(0.35f, 0.05f, 0.7f), COL_BOARD);
     draw_box(fb, cam, basis,
-             vec3(p->position.x, py + 0.07f, p->position.z),
-             vec3(0.45f, 0.05f, 0.7f), COL_BOOST);
+             vec3(p->position.x, py + 0.12f, p->position.z - 0.15f),
+             vec3(0.18f, 0.03f, 0.22f), shade_color(COL_BOARD, 1.2f));
   }
 }
 
@@ -703,11 +966,75 @@ static uint32_t powerup_color(PowerUpType t) {
   return COL_MAGNET;
 }
 
+static void draw_train_car(Framebuffer *fb, const CameraTransform *cam,
+                           const CamBasis *basis, float x, float centerZ,
+                           float halfW, float halfH, float halfCar, float bodyY,
+                           uint32_t body, uint32_t accent, int isLead) {
+  float wz;
+  draw_box(fb, cam, basis, vec3(x, bodyY, centerZ),
+           vec3(halfW, halfH, halfCar), body);
+  draw_box(fb, cam, basis, vec3(x, bodyY + halfH * 0.35f, centerZ),
+           vec3(halfW * 1.02f, 0.12f, halfCar * 0.98f), accent);
+  draw_box(fb, cam, basis, vec3(x, bodyY - halfH * 0.45f, centerZ),
+           vec3(halfW * 1.02f, 0.08f, halfCar * 0.98f), accent);
+  draw_box(fb, cam, basis, vec3(x, bodyY + halfH + 0.08f, centerZ),
+           vec3(halfW * 0.78f, 0.1f, halfCar * 0.7f), accent);
+  draw_box(fb, cam, basis, vec3(x, bodyY - halfH - 0.12f, centerZ),
+           vec3(halfW * 0.85f, 0.14f, halfCar * 0.8f), COL_TRAIN_METAL);
+
+  for (wz = -1.5f; wz <= 1.5f; wz += 1.5f) {
+    draw_box(fb, cam, basis,
+             vec3(x - halfW - 0.02f, bodyY + 0.35f, centerZ + wz),
+             vec3(0.04f, 0.28f, 0.5f), COL_TRAIN_WINDOW);
+    draw_box(fb, cam, basis,
+             vec3(x + halfW + 0.02f, bodyY + 0.35f, centerZ + wz),
+             vec3(0.04f, 0.28f, 0.5f), COL_TRAIN_WINDOW);
+  }
+  draw_box(fb, cam, basis, vec3(x - halfW - 0.02f, bodyY - 0.15f, centerZ),
+           vec3(0.04f, 0.55f, 0.45f), COL_TRAIN_METAL);
+  draw_box(fb, cam, basis, vec3(x + halfW + 0.02f, bodyY - 0.15f, centerZ),
+           vec3(0.04f, 0.55f, 0.45f), COL_TRAIN_METAL);
+
+  draw_box(fb, cam, basis,
+           vec3(x - halfW * 0.75f, bodyY - halfH - 0.12f, centerZ + halfCar * 0.65f),
+           vec3(0.12f, 0.18f, 0.12f), COL_TRAIN_WHEEL);
+  draw_box(fb, cam, basis,
+           vec3(x + halfW * 0.75f, bodyY - halfH - 0.12f, centerZ + halfCar * 0.65f),
+           vec3(0.12f, 0.18f, 0.12f), COL_TRAIN_WHEEL);
+  draw_box(fb, cam, basis,
+           vec3(x - halfW * 0.75f, bodyY - halfH - 0.12f, centerZ - halfCar * 0.65f),
+           vec3(0.12f, 0.18f, 0.12f), COL_TRAIN_WHEEL);
+  draw_box(fb, cam, basis,
+           vec3(x + halfW * 0.75f, bodyY - halfH - 0.12f, centerZ - halfCar * 0.65f),
+           vec3(0.12f, 0.18f, 0.12f), COL_TRAIN_WHEEL);
+
+  if (isLead) {
+    draw_box(fb, cam, basis,
+             vec3(x, bodyY + 0.1f, centerZ + halfCar + 0.35f),
+             vec3(halfW * 0.85f, halfH * 0.55f, 0.4f), body);
+    draw_box(fb, cam, basis,
+             vec3(x - 0.45f, bodyY - 0.2f, centerZ + halfCar + 0.7f),
+             vec3(0.14f, 0.1f, 0.06f), COL_TRAIN_LIGHT);
+    draw_box(fb, cam, basis,
+             vec3(x + 0.45f, bodyY - 0.2f, centerZ + halfCar + 0.7f),
+             vec3(0.14f, 0.1f, 0.06f), COL_TRAIN_LIGHT);
+    draw_box(fb, cam, basis,
+             vec3(x, bodyY + 0.45f, centerZ + halfCar + 0.65f),
+             vec3(0.12f, 0.1f, 0.06f), COL_TRAIN_LIGHT);
+  } else {
+    draw_box(fb, cam, basis,
+             vec3(x, bodyY - 0.35f, centerZ + halfCar + 0.2f),
+             vec3(0.16f, 0.12f, 0.2f), COL_TRAIN_METAL);
+  }
+}
+
 static void draw_entity(Framebuffer *fb, const CameraTransform *cam,
-                        const CamBasis *basis, const GameEntity *e) {
+                        const CamBasis *basis, const GameEntity *e,
+                        float time) {
   float laneX = (float)e->lane * GAME_CONFIG.laneWidth;
   Bounds b;
   Vec3 half;
+  int stripe;
 
   switch (e->kind) {
     case ENTITY_OBSTACLE:
@@ -715,33 +1042,48 @@ static void draw_entity(Framebuffer *fb, const CameraTransform *cam,
         return;
       }
       half = b.halfSize;
-      {
-        uint32_t col = COL_BARRIER;
-        if (e->variant == OBSTACLE_LOW_BARRIER) {
-          col = COL_LOW_BARRIER;
-        } else if (e->variant == OBSTACLE_OVERHEAD) {
-          col = COL_OVERHEAD;
-        } else if (e->variant == OBSTACLE_CRATE) {
-          col = COL_CRATE;
+      if (e->variant == OBSTACLE_BARRIER) {
+        draw_box(fb, cam, basis, b.center, half, COL_BARRIER);
+        for (stripe = 0; stripe < 4; stripe++) {
+          float sy = b.center.y - half.y + 0.15f + (float)stripe * 0.28f;
+          draw_box(fb, cam, basis, vec3(b.center.x, sy, b.center.z),
+                   vec3(half.x * 1.02f, 0.08f, half.z * 1.05f),
+                   (stripe % 2 == 0) ? COL_BARRIER_ACCENT : COL_BARRIER);
         }
-        draw_box(fb, cam, basis, b.center, half, col);
-        if (e->variant == OBSTACLE_BARRIER) {
-          draw_box(fb, cam, basis,
-                   vec3(b.center.x - half.x + 0.08f, b.center.y * 0.5f,
-                        b.center.z),
-                   vec3(0.08f, b.center.y * 0.5f, 0.08f), 0xFF111827u);
-          draw_box(fb, cam, basis,
-                   vec3(b.center.x + half.x - 0.08f, b.center.y * 0.5f,
-                        b.center.z),
-                   vec3(0.08f, b.center.y * 0.5f, 0.08f), 0xFF111827u);
-        } else if (e->variant == OBSTACLE_OVERHEAD) {
-          draw_box(fb, cam, basis,
-                   vec3(laneX - 1.05f, 1.0f, e->positionZ),
-                   vec3(0.1f, 1.0f, 0.1f), 0xFF334155u);
-          draw_box(fb, cam, basis,
-                   vec3(laneX + 1.05f, 1.0f, e->positionZ),
-                   vec3(0.1f, 1.0f, 0.1f), 0xFF334155u);
-        }
+        draw_box(fb, cam, basis,
+                 vec3(b.center.x - half.x + 0.08f, b.center.y * 0.55f,
+                      b.center.z),
+                 vec3(0.1f, b.center.y * 0.7f, 0.1f), COL_BARRIER_ACCENT);
+        draw_box(fb, cam, basis,
+                 vec3(b.center.x + half.x - 0.08f, b.center.y * 0.55f,
+                      b.center.z),
+                 vec3(0.1f, b.center.y * 0.7f, 0.1f), COL_BARRIER_ACCENT);
+      } else if (e->variant == OBSTACLE_LOW_BARRIER) {
+        draw_box(fb, cam, basis, b.center, half, COL_BARRIER);
+        draw_box(fb, cam, basis,
+                 vec3(b.center.x, b.center.y + half.y * 0.35f, b.center.z),
+                 vec3(half.x * 1.02f, 0.07f, half.z * 1.05f), COL_BARRIER_ACCENT);
+        draw_box(fb, cam, basis,
+                 vec3(b.center.x, b.center.y - half.y * 0.35f, b.center.z),
+                 vec3(half.x * 1.02f, 0.05f, half.z * 0.95f), COL_BARRIER_ACCENT);
+      } else if (e->variant == OBSTACLE_OVERHEAD) {
+        draw_box(fb, cam, basis, b.center, half, COL_OVERHEAD);
+        draw_box(fb, cam, basis, vec3(laneX - 1.05f, 1.0f, e->positionZ),
+                 vec3(0.1f, 1.1f, 0.1f), COL_OVERHEAD_POST);
+        draw_box(fb, cam, basis, vec3(laneX + 1.05f, 1.0f, e->positionZ),
+                 vec3(0.1f, 1.1f, 0.1f), COL_OVERHEAD_POST);
+        draw_box(fb, cam, basis,
+                 vec3(laneX, b.center.y - 0.2f, e->positionZ + 0.05f),
+                 vec3(0.18f, 0.1f, 0.18f), COL_OVERHEAD_LIGHT);
+      } else {
+        draw_box(fb, cam, basis, b.center, half, COL_CRATE);
+        draw_box(fb, cam, basis,
+                 vec3(b.center.x, b.center.y + half.y * 0.25f, b.center.z),
+                 vec3(half.x * 1.05f, 0.08f, half.z * 1.05f), COL_CRATE_STRIPE);
+        draw_box(fb, cam, basis,
+                 vec3(b.center.x, b.center.y + half.y + 0.05f,
+                      b.center.z + half.z * 0.7f),
+                 vec3(0.25f, 0.05f, 0.05f), COL_TRAIN_METAL);
       }
       break;
 
@@ -755,21 +1097,20 @@ static void draw_entity(Framebuffer *fb, const CameraTransform *cam,
       float halfCar = carLen * 0.48f;
       int cars = e->cars;
       int c;
+      int liv = hash_u32(e->id) % 7;
+      uint32_t body = TRAIN_BODY[liv];
+      uint32_t accent = TRAIN_ACCENT[liv];
       if (cars < 1) {
         cars = (int)(e->length / carLen + 0.5f);
         if (cars < 1) {
           cars = 1;
         }
       }
-      /* Draw per car so long trains don't straddle the near plane as one mesh. */
       for (c = 0; c < cars; c++) {
         float rearZ = e->positionZ - (float)c * carLen;
         float centerZ = rearZ - carLen * 0.5f;
-        draw_box(fb, cam, basis, vec3(x, bodyY, centerZ),
-                 vec3(halfW, halfH, halfCar), COL_TRAIN);
-        draw_box(fb, cam, basis,
-                 vec3(x, bodyY + halfH * 0.55f, centerZ),
-                 vec3(halfW * 0.95f, 0.12f, halfCar * 0.9f), 0xFFFF8A3Du);
+        draw_train_car(fb, cam, basis, x, centerZ, halfW, halfH, halfCar, bodyY,
+                       body, accent, c == 0);
       }
       break;
     }
@@ -778,33 +1119,65 @@ static void draw_entity(Framebuffer *fb, const CameraTransform *cam,
       if (e->collected || !get_entity_bounds(e, &b)) {
         return;
       }
-      draw_box(fb, cam, basis, b.center, b.halfSize, COL_COIN);
+      {
+        float spin = absf(sinf(time * 7.0f + e->positionZ * 0.35f));
+        float bobY = sinf(time * 5.0f + e->positionZ) * 0.08f;
+        float hx = 0.08f + spin * 0.34f;
+        float hz = 0.42f - spin * 0.18f;
+        Vec3 center = vec3(b.center.x, b.center.y + bobY, b.center.z);
+        draw_box(fb, cam, basis, center, vec3(hx, 0.42f, hz), COL_COIN);
+        draw_box(fb, cam, basis, center,
+                 vec3(hx * 1.08f, 0.42f, hz * 1.08f * 0.15f + 0.04f), COL_COIN_RIM);
+        draw_box(fb, cam, basis, center, vec3(hx * 0.45f, 0.18f, hz * 0.45f),
+                 COL_COIN_CORE);
+      }
       break;
 
     case ENTITY_POWER_UP:
       if (e->collected || !get_entity_bounds(e, &b)) {
         return;
       }
-      draw_box(fb, cam, basis, b.center, b.halfSize,
-               powerup_color(e->powerUpType));
+      {
+        float bobY = sinf(time * 4.0f + (float)e->id) * 0.16f;
+        Vec3 c = vec3(b.center.x, b.center.y + bobY, b.center.z);
+        uint32_t col = powerup_color(e->powerUpType);
+        if (e->powerUpType == POWERUP_BOOST) {
+          draw_box(fb, cam, basis, c, vec3(0.32f, 0.08f, 0.55f), col);
+        } else if (e->powerUpType == POWERUP_MAGNET) {
+          draw_box(fb, cam, basis, c, vec3(0.35f, 0.12f, 0.35f), col);
+          draw_box(fb, cam, basis, vec3(c.x, c.y, c.z),
+                   vec3(0.45f, 0.06f, 0.45f), shade_color(col, 1.2f));
+        } else {
+          draw_box(fb, cam, basis, c, vec3(0.28f, 0.28f, 0.28f), col);
+          draw_box(fb, cam, basis, c, vec3(0.14f, 0.42f, 0.14f),
+                   shade_color(col, 1.15f));
+        }
+      }
       break;
 
     case ENTITY_DECORATION: {
-      /* Side props sit off the playable lanes (same as ts-subway). */
       float x = (float)e->lane * (GAME_CONFIG.laneWidth * 2.45f);
       if (e->style == DECOR_LAMP) {
         draw_box(fb, cam, basis, vec3(x, 1.55f, e->positionZ),
                  vec3(0.1f, 1.7f, 0.1f), COL_LAMP);
         draw_box(fb, cam, basis, vec3(x, 3.25f, e->positionZ),
                  vec3(0.28f, 0.28f, 0.28f), COL_LAMP_GLOW);
+        draw_box(fb, cam, basis, vec3(x + 0.22f, 2.4f, e->positionZ),
+                 vec3(0.18f, 0.28f, 0.12f), COL_OVERHEAD_LIGHT);
       } else if (e->style == DECOR_SIGN) {
+        uint32_t panel =
+            (hash_u32(e->id) % 2 == 0) ? COL_SIGN : COL_SIGN_ALT;
         draw_box(fb, cam, basis, vec3(x, 1.55f, e->positionZ),
                  vec3(0.09f, 1.55f, 0.09f), COL_LAMP);
         draw_box(fb, cam, basis, vec3(x, 3.1f, e->positionZ),
-                 vec3(0.08f, 0.55f, 0.9f), COL_SIGN);
+                 vec3(0.08f, 0.55f, 0.9f), COL_BILLBOARD_FRAME);
+        draw_box(fb, cam, basis, vec3(x + 0.05f, 3.1f, e->positionZ),
+                 vec3(0.06f, 0.48f, 0.8f), panel);
       } else {
         draw_box(fb, cam, basis, vec3(x, 2.0f, e->positionZ),
                  vec3(0.375f, 2.2f, 0.375f), COL_PILLAR);
+        draw_box(fb, cam, basis, vec3(x, 4.15f, e->positionZ),
+                 vec3(0.42f, 0.12f, 0.42f), COL_WALL_CAP);
       }
       break;
     }
@@ -862,29 +1235,97 @@ static void draw_text(Framebuffer *fb, int x, int y, const char *text,
   }
 }
 
+static void fill_rect_hud(Framebuffer *fb, int x0, int y0, int x1, int y1,
+                          uint32_t color) {
+  int x, y;
+  if (x0 < 0) {
+    x0 = 0;
+  }
+  if (y0 < 0) {
+    y0 = 0;
+  }
+  if (x1 > fb->width) {
+    x1 = fb->width;
+  }
+  if (y1 > fb->height) {
+    y1 = fb->height;
+  }
+  for (y = y0; y < y1; y++) {
+    for (x = x0; x < x1; x++) {
+      uint32_t dst = fb->pixels[y * fb->width + x];
+      int a = (int)((color >> 24) & 0xFFu);
+      if (a >= 250) {
+        put_pixel_hud(fb, x, y, color | 0xFF000000u);
+      } else {
+        float t = (float)a / 255.0f;
+        put_pixel_hud(fb, x, y, lerp_color(dst | 0xFF000000u, color | 0xFF000000u, t));
+      }
+    }
+  }
+}
+
 static void draw_hud(Framebuffer *fb, const GameState *state) {
   char line[96];
-  int y = 8;
+  int y = 10;
   const char *status = NULL;
+  float mult = get_multiplier(state->effects, state->effectCount, &state->cheats);
+
+  fill_rect_hud(fb, 4, 4, 168, 92, COL_HUD_PANEL);
+  fill_rect_hud(fb, fb->width - 118, 4, fb->width - 4, 36, COL_HUD_PANEL);
 
   sprintf(line, "SCORE %d", (int)state->score);
-  draw_text(fb, 8, y, line, COL_HUD, 2);
+  draw_text(fb, 10, y, line, COL_HUD, 2);
   y += 18;
   sprintf(line, "COINS %d", state->coins);
-  draw_text(fb, 8, y, line, COL_COIN, 2);
+  draw_text(fb, 10, y, line, COL_HUD_GOLD, 2);
   y += 18;
   sprintf(line, "DIST %dm", (int)state->distance);
-  draw_text(fb, 8, y, line, COL_HUD_DIM, 2);
+  draw_text(fb, 10, y, line, COL_HUD_DIM, 2);
   y += 18;
   sprintf(line, "BEST %d", (int)state->highScore);
-  draw_text(fb, 8, y, line, COL_HUD_DIM, 2);
+  draw_text(fb, 10, y, line, COL_HUD_DIM, 2);
 
   sprintf(line, "BOARD %d", state->boardCharges);
-  draw_text(fb, fb->width - 8 - (int)strlen(line) * 12, 8, line, COL_BOOST, 2);
+  draw_text(fb, fb->width - 8 - (int)strlen(line) * 12, 10, line, COL_BOARD, 2);
+
+  if (mult > 1.01f) {
+    sprintf(line, "x%d", (int)(mult + 0.1f));
+    draw_text(fb, fb->width - 8 - (int)strlen(line) * 12, 32, line, COL_MULTIPLIER,
+              2);
+  }
+
+  if (state->effectCount > 0) {
+    int i;
+    int ex = 10;
+    for (i = 0; i < state->effectCount; i++) {
+      const char *label = "?";
+      uint32_t col = COL_HUD;
+      switch (state->effects[i].type) {
+        case POWERUP_MAGNET:
+          label = "MAG";
+          col = COL_MAGNET;
+          break;
+        case POWERUP_MULTIPLIER:
+          label = "x2";
+          col = COL_MULTIPLIER;
+          break;
+        case POWERUP_INVINCIBLE:
+          label = "SHIELD";
+          col = COL_INVINCIBLE;
+          break;
+        case POWERUP_BOOST:
+          label = "JET";
+          col = COL_BOOST;
+          break;
+      }
+      draw_text(fb, ex, 100, label, col, 1);
+      ex += (int)strlen(label) * 6 + 10;
+    }
+  }
 
   switch (state->status.type) {
     case STATUS_READY:
-      status = "READY";
+      status = "METRO RUSH";
       break;
     case STATUS_PAUSED:
       status = "PAUSED";
@@ -900,11 +1341,12 @@ static void draw_hud(Framebuffer *fb, const GameState *state) {
   if (status != NULL) {
     int len = (int)strlen(status);
     int tx = (fb->width - len * 12) / 2;
-    int ty = fb->height / 2 - 40;
+    int ty = fb->height / 2 - 48;
+    fill_rect_hud(fb, tx - 16, ty - 12, tx + len * 12 + 16, ty + 72, COL_HUD_PANEL);
     draw_text(fb, tx, ty, status, COL_HUD, 2);
     if (state->status.type == STATUS_READY) {
       draw_text(fb, (fb->width - 22 * 12) / 2, ty + 28,
-                "ENTER TO START", COL_HUD_DIM, 2);
+                "ENTER TO START", COL_HUD_GOLD, 2);
       draw_text(fb, 8, fb->height - 40,
                 "A/D LANE  W/SPACE JUMP  S SLIDE  P PAUSE", COL_HUD_DIM, 1);
       draw_text(fb, 8, fb->height - 28,
@@ -920,7 +1362,7 @@ static void draw_hud(Framebuffer *fb, const GameState *state) {
   }
 
   if (g_show_cheats || is_cheat_active(state->cheats)) {
-    y = 100;
+    y = 118;
     draw_text(fb, 8, y, "CHEATS", COL_HUD, 2);
     y += 18;
     sprintf(line, "1 IMMORTAL %s", state->cheats.immortal ? "ON" : "OFF");
@@ -938,7 +1380,7 @@ static void draw_hud(Framebuffer *fb, const GameState *state) {
   }
 
   if (state->muted) {
-    draw_text(fb, fb->width - 60, 28, "MUTE", COL_HUD_DIM, 1);
+    draw_text(fb, fb->width - 60, 40, "MUTE", COL_HUD_DIM, 1);
   }
 }
 
@@ -975,11 +1417,12 @@ void render_frame(Framebuffer *fb, GameState *state, float dt) {
   }
 
   basis = make_basis(&g_cam, fb->width, fb->height);
+  draw_sky_props(fb, &g_cam, &basis, state);
   draw_ground(fb, &g_cam, &basis, state);
 
   count = flatten_entities(state, flat, MAX_FLATTEN_ENTITIES);
   for (i = 0; i < count; i++) {
-    draw_entity(fb, &g_cam, &basis, &flat[i]);
+    draw_entity(fb, &g_cam, &basis, &flat[i], state->elapsedSeconds);
   }
 
   draw_player(fb, &g_cam, &basis, state);
