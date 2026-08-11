@@ -94,6 +94,32 @@ void apply_train_ride_motion(PlayerState *player,
   player->position.z = player->position.z + train->speed * dt;
 }
 
+bool train_blocks_lane_change(const PlayerState *player, Lane targetLane,
+                              const GameEntity *entities, int count) {
+  int i;
+
+  if (player->position.y > GAME_CONFIG.trainBodyHeight * 0.55f) {
+    return false;
+  }
+  if (is_above_train_roof(player->position.y)) {
+    return false;
+  }
+
+  for (i = 0; i < count; i++) {
+    const GameEntity *train = &entities[i];
+    float z;
+    if (train->kind != ENTITY_TRAIN || train->lane != targetLane) {
+      continue;
+    }
+    z = player->position.z;
+    if (z <= train_back_z(train) + 0.55f &&
+        z >= train_front_z(train) - 0.55f) {
+      return true;
+    }
+  }
+  return false;
+}
+
 static float target_lane_x(Lane lane) {
   return (float)lane * GAME_CONFIG.laneWidth;
 }

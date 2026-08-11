@@ -86,7 +86,13 @@ static void apply_command(GameState *state, GameCommand command) {
   switch (command.type) {
     case CMD_MOVE_LEFT: {
       Lane nextLane = shift_lane(state->player.lane, -1);
+      GameEntity flat[MAX_FLATTEN_ENTITIES];
+      int flatCount;
       if (nextLane == state->player.lane) {
+        return;
+      }
+      flatCount = flatten_entities(state, flat, MAX_FLATTEN_ENTITIES);
+      if (train_blocks_lane_change(&state->player, nextLane, flat, flatCount)) {
         return;
       }
       state->player.lane = nextLane;
@@ -98,7 +104,13 @@ static void apply_command(GameState *state, GameCommand command) {
     }
     case CMD_MOVE_RIGHT: {
       Lane nextLane = shift_lane(state->player.lane, 1);
+      GameEntity flat[MAX_FLATTEN_ENTITIES];
+      int flatCount;
       if (nextLane == state->player.lane) {
+        return;
+      }
+      flatCount = flatten_entities(state, flat, MAX_FLATTEN_ENTITIES);
+      if (train_blocks_lane_change(&state->player, nextLane, flat, flatCount)) {
         return;
       }
       state->player.lane = nextLane;

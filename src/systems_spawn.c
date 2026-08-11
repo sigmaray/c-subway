@@ -27,9 +27,9 @@ static const RowKind BEAT_2[] = { ROW_JUMP, ROW_SLIDE, ROW_DODGE, ROW_COINS };
 static const RowKind BEAT_3[] = { ROW_TRAIN, ROW_JUMP, ROW_WEAVE, ROW_SLIDE };
 static const RowKind BEAT_4[] = { ROW_SLIDE, ROW_COINS, ROW_TRAIN, ROW_DODGE };
 static const RowKind BEAT_5[] = { ROW_WEAVE, ROW_JUMP, ROW_DODGE, ROW_TRAIN };
-static const RowKind BEAT_6[] = { ROW_DUAL_TRAIN, ROW_SLIDE, ROW_COINS };
+static const RowKind BEAT_6[] = { ROW_TRAIN, ROW_SLIDE, ROW_COINS };
 static const RowKind BEAT_7[] = { ROW_DODGE, ROW_JUMP, ROW_TRAIN, ROW_WEAVE };
-static const RowKind BEAT_8[] = { ROW_JUMP, ROW_DUAL_TRAIN, ROW_SLIDE };
+static const RowKind BEAT_8[] = { ROW_JUMP, ROW_TRAIN, ROW_SLIDE };
 static const RowKind BEAT_9[] = {
     ROW_COINS, ROW_SLIDE, ROW_JUMP, ROW_DODGE, ROW_TRAIN };
 static const RowKind BEAT_10[] = { ROW_TRAIN, ROW_WEAVE, ROW_SLIDE, ROW_JUMP };
@@ -84,26 +84,26 @@ static GameEntity make_obstacle(Lane lane, float positionZ,
   switch (variant) {
     case OBSTACLE_BARRIER:
       e.height = 1.55f;
-      e.width = GAME_CONFIG.laneWidth * 0.78f;
-      e.depth = 0.45f;
+      e.width = GAME_CONFIG.laneWidth * 0.72f;
+      e.depth = 0.4f;
       e.baseY = 0.0f;
       break;
     case OBSTACLE_LOW_BARRIER:
       e.height = 0.5f;
-      e.width = GAME_CONFIG.laneWidth * 0.78f;
-      e.depth = 0.55f;
+      e.width = GAME_CONFIG.laneWidth * 0.72f;
+      e.depth = 0.45f;
       e.baseY = 0.0f;
       break;
     case OBSTACLE_OVERHEAD:
       e.height = 1.05f;
-      e.width = GAME_CONFIG.laneWidth * 0.82f;
-      e.depth = 0.5f;
+      e.width = GAME_CONFIG.laneWidth * 0.76f;
+      e.depth = 0.42f;
       e.baseY = 1.05f;
       break;
     case OBSTACLE_CRATE:
       e.height = 1.15f;
-      e.width = 1.0f;
-      e.depth = 0.95f;
+      e.width = 0.92f;
+      e.depth = 0.85f;
       e.baseY = 0.0f;
       break;
   }
@@ -245,7 +245,7 @@ static void add_sky_coin_arc(WorldSegment *seg, Lane lane, float startZ,
 static uint32_t spawn_jump_row(WorldSegment *seg, float rowZ,
                                SpawnContext ctx, uint32_t seed) {
   bool blocked[3] = { false, false, false };
-  int maxExclusive = 1 + (int)floor((double)(ctx.difficulty * 1.2f));
+  int maxExclusive = 1 + (int)floor((double)(ctx.difficulty * 0.75f));
   IntResult countRoll;
   int i;
 
@@ -283,7 +283,7 @@ static uint32_t spawn_jump_row(WorldSegment *seg, float rowZ,
 static uint32_t spawn_slide_row(WorldSegment *seg, float rowZ,
                                 SpawnContext ctx, uint32_t seed) {
   bool blocked[3] = { false, false, false };
-  int maxExclusive = 1 + (int)floor((double)(ctx.difficulty * 1.2f));
+  int maxExclusive = 1 + (int)floor((double)(ctx.difficulty * 0.75f));
   IntResult countRoll;
   int i;
 
@@ -529,7 +529,7 @@ static uint32_t spawn_mixed_row(WorldSegment *seg, float rowZ,
     }
   }
 
-  maxExclusive = 1 + (int)floor((double)(ctx.difficulty * 1.2f));
+  maxExclusive = 1 + (int)floor((double)(ctx.difficulty * 0.75f));
   if (maxExclusive > 2) {
     maxExclusive = 2;
   }
@@ -577,7 +577,7 @@ static uint32_t spawn_mixed_row(WorldSegment *seg, float rowZ,
 static uint32_t spawn_pattern(WorldSegment *seg, float startZ,
                               SpawnContext ctx) {
   uint32_t seed = ctx.seed;
-  float gapScale = 1.0f - ctx.difficulty * 0.25f;
+  float gapScale = 1.0f - ctx.difficulty * 0.18f;
   IntResult beatPick = pick_index(seed, BEAT_COUNT);
   const BeatSeq *beat;
   RowKind rows[16];
@@ -593,7 +593,7 @@ static uint32_t spawn_pattern(WorldSegment *seg, float startZ,
   for (i = 0; i < beat->count && rowCount < 16; i++) {
     rows[rowCount++] = beat->rows[i];
   }
-  extraRows = (int)floor((double)(ctx.difficulty * 1.0f));
+  extraRows = (int)floor((double)(ctx.difficulty * 0.5f));
   for (i = 0; i < extraRows && rowCount < 16; i++) {
     IntResult extraPick = pick_index(seed, beat->count);
     seed = extraPick.seed;
@@ -601,7 +601,7 @@ static uint32_t spawn_pattern(WorldSegment *seg, float startZ,
   }
 
   for (row = 0; row < rowCount; row++) {
-    float rowZ = startZ - 6.0f - (float)row * (11.0f * gapScale + 3.5f);
+    float rowZ = startZ - 6.0f - (float)row * (12.5f * gapScale + 4.5f);
     RowKind kind = rows[row];
     ChanceResult powerChance;
 

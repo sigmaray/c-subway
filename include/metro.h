@@ -452,6 +452,8 @@ bool          can_land_on_train(const PlayerState *player,
 void          apply_train_ride_motion(PlayerState *player,
                                       const GameEntity *train,
                                       float dt);
+bool          train_blocks_lane_change(const PlayerState *player, Lane targetLane,
+                                       const GameEntity *entities, int count);
 
 /* -------------------------------------------------------------------------- */
 /* Collision / collect / attract / effects                                    */
