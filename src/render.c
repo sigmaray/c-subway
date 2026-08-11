@@ -29,10 +29,18 @@
 #define COL_SIGN 0xFF22D3EEu
 #define COL_PILLAR 0xFFA8A29Eu
 #define COL_TRACK 0xFF6B5B4Au
+#define COL_TRACK_CENTER 0xFF564737u
+#define COL_BALLAST 0xFF8A7A66u
 #define COL_RAIL 0xFFE8E8E8u
 #define COL_SLEEPER 0xFF6B3F1Du
+#define COL_PLATFORM 0xFFB0BEC8u
+#define COL_PLATFORM_TOP 0xFFE8EEF3u
+#define COL_PLATFORM_EDGE 0xFFFFCC00u
+#define COL_WALL 0xFF90A4AEu
+#define COL_WALL_TRIM 0xFFFF7A18u
 #define COL_HUD 0xFFFFFFFFu
-#define COL_HUD_DIM 0xFFB0BEC5u
+#define COL_HUD_DIM 0xFFE2E8F0u
+#define COL_HUD_OUTLINE 0xFF0F172Au
 
 typedef struct CameraTransform {
   Vec3 position;
@@ -301,28 +309,69 @@ static CamBasis make_basis(const CameraTransform *cam, int w, int h) {
   return b;
 }
 
-static ProjVert project_point(Vec3 world, const CameraTransform *cam,
-                              const CamBasis *b, int w, int h) {
-  ProjVert out;
-  Vec3 rel = v3_sub(world, cam->position);
-  float vx = v3_dot(rel, b->right);
-  float vy = v3_dot(rel, b->up);
-  float vz = v3_dot(rel, b->forward);
-  float nx, ny;
+#define NEAR_CLIP 0.2f
 
+typedef struct ViewVert {
+  float x, y, z;
+} ViewVert;
+
+static ViewVert world_to_view(Vec3 world, const CameraTransform *cam,
+                             const CamBasis *b) {
+  ViewVert v;
+  Vec3 rel = v3_sub(world, cam->position);
+  v.x = v3_dot(rel, b->right);
+  v.y = v3_dot(rel, b->up);
+  v.z = v3_dot(rel, b->forward);
+  return v;
+}
+
+static ProjVert project_view(ViewVert v, const CamBasis *b, int w, int h) {
+  ProjVert out;
+  float nx, ny;
   out.valid = 0;
   out.x = 0.0f;
   out.y = 0.0f;
-  out.z = vz;
-  if (vz < 0.15f) {
+  out.z = v.z;
+  if (v.z < NEAR_CLIP * 0.5f) {
     return out;
   }
-  nx = (vx / vz) * b->focal / b->aspect;
-  ny = (vy / vz) * b->focal;
+  nx = (v.x / v.z) * b->focal / b->aspect;
+  ny = (v.y / v.z) * b->focal;
   out.x = (nx * 0.5f + 0.5f) * (float)w;
   out.y = (-ny * 0.5f + 0.5f) * (float)h;
   out.valid = 1;
   return out;
+}
+
+static ViewVert lerp_view(ViewVert a, ViewVert b, float t) {
+  ViewVert r;
+  r.x = a.x + (b.x - a.x) * t;
+  r.y = a.y + (b.y - a.y) * t;
+  r.z = a.z + (b.z - a.z) * t;
+  return r;
+}
+
+/* Clip convex polygon against view-space near plane. out must hold >= n+1. */
+static int clip_poly_near(const ViewVert *in, int n, ViewVert *out) {
+  int count = 0;
+  int i;
+  for (i = 0; i < n; i++) {
+    ViewVert a = in[i];
+    ViewVert b = in[(i + 1) % n];
+    int aIn = a.z >= NEAR_CLIP;
+    int bIn = b.z >= NEAR_CLIP;
+    if (aIn && bIn) {
+      out[count++] = b;
+    } else if (aIn && !bIn) {
+      float t = (NEAR_CLIP - a.z) / (b.z - a.z);
+      out[count++] = lerp_view(a, b, t);
+    } else if (!aIn && bIn) {
+      float t = (NEAR_CLIP - a.z) / (b.z - a.z);
+      out[count++] = lerp_view(a, b, t);
+      out[count++] = b;
+    }
+  }
+  return count;
 }
 
 static void ensure_zbuf(int w, int h) {
@@ -442,7 +491,7 @@ static void draw_box(Framebuffer *fb, const CameraTransform *cam,
       {0, 0, -1}, {0, 0, 1}, {-1, 0, 0}, {1, 0, 0}, {0, -1, 0}, {0, 1, 0},
   };
   Vec3 corners[8];
-  ProjVert proj[8];
+  ViewVert view[8];
   Vec3 light = v3_norm(vec3(0.35f, 0.85f, 0.25f));
   int i, f;
 
@@ -456,7 +505,7 @@ static void draw_box(Framebuffer *fb, const CameraTransform *cam,
   corners[7] = vec3(center.x + half.x, center.y + half.y, center.z + half.z);
 
   for (i = 0; i < 8; i++) {
-    proj[i] = project_point(corners[i], cam, basis, fb->width, fb->height);
+    view[i] = world_to_view(corners[i], cam, basis);
   }
 
   for (f = 0; f < 6; f++) {
@@ -468,53 +517,100 @@ static void draw_box(Framebuffer *fb, const CameraTransform *cam,
     float facing = v3_dot(n, toCam);
     float intensity;
     uint32_t shaded;
-    int i0, i1, i2, i3;
+    ViewVert poly[4];
+    ViewVert clipped[8];
+    ProjVert proj[8];
+    int nc;
+    int t;
 
     if (facing <= 0.0f) {
       continue;
     }
     intensity = 0.35f + 0.65f * maxf(0.0f, v3_dot(n, light));
     shaded = shade_color(color, intensity);
-    i0 = faces[f][0];
-    i1 = faces[f][1];
-    i2 = faces[f][2];
-    i3 = faces[f][3];
-    fill_triangle(fb, proj[i0], proj[i1], proj[i2], shaded);
-    fill_triangle(fb, proj[i0], proj[i2], proj[i3], shaded);
+
+    poly[0] = view[faces[f][0]];
+    poly[1] = view[faces[f][1]];
+    poly[2] = view[faces[f][2]];
+    poly[3] = view[faces[f][3]];
+    nc = clip_poly_near(poly, 4, clipped);
+    if (nc < 3) {
+      continue;
+    }
+    for (i = 0; i < nc; i++) {
+      proj[i] = project_view(clipped[i], basis, fb->width, fb->height);
+      if (!proj[i].valid) {
+        nc = 0;
+        break;
+      }
+    }
+    if (nc < 3) {
+      continue;
+    }
+    for (t = 1; t < nc - 1; t++) {
+      fill_triangle(fb, proj[0], proj[t], proj[t + 1], shaded);
+    }
   }
 }
 
 static void draw_ground(Framebuffer *fb, const CameraTransform *cam,
                         const CamBasis *basis, const GameState *state) {
-  float playerZ = state->player.position.z;
-  float z;
   float laneW = GAME_CONFIG.laneWidth;
+  const float spacing = 2.0f;
+  const float stripLen = 4.0f;
+  float halfLen = stripLen * 0.5f;
+  float gridZ;
   int strip;
+  int laneIdx;
+  int side;
+  int s;
+  static const float LANE_DIRS[3] = {-1.0f, 0.0f, 1.0f};
+  (void)state;
 
-  for (strip = -2; strip <= 40; strip++) {
-    z = playerZ - 8.0f - (float)strip * 4.0f;
-    /* ballast / track bed */
-    draw_box(fb, cam, basis,
-             vec3(0.0f, -0.12f, z - 2.0f),
-             vec3(laneW * 2.2f, 0.08f, 2.0f), COL_TRACK);
-    /* center lane darker */
-    draw_box(fb, cam, basis,
-             vec3(0.0f, -0.05f, z - 2.0f),
-             vec3(laneW * 0.45f, 0.04f, 2.0f), shade_color(COL_TRACK, 0.75f));
-    /* sleepers */
-    draw_box(fb, cam, basis,
-             vec3(0.0f, -0.02f, z - 0.5f),
-             vec3(laneW * 1.6f, 0.05f, 0.18f), COL_SLEEPER);
-    draw_box(fb, cam, basis,
-             vec3(0.0f, -0.02f, z - 2.5f),
-             vec3(laneW * 1.6f, 0.05f, 0.18f), COL_SLEEPER);
-    /* rails */
-    draw_box(fb, cam, basis,
-             vec3(-laneW * 0.85f, 0.02f, z - 2.0f),
-             vec3(0.06f, 0.04f, 2.0f), COL_RAIL);
-    draw_box(fb, cam, basis,
-             vec3(laneW * 0.85f, 0.02f, z - 2.0f),
-             vec3(0.06f, 0.04f, 2.0f), COL_RAIL);
+  /* Lock repeating track pieces to world Z so sleepers don't swim with the camera. */
+  gridZ = (float)floor((double)((cam->position.z - 0.5f) / spacing)) * spacing;
+
+  for (strip = 0; strip < 42; strip++) {
+    float z0 = gridZ - (float)strip * stripLen;
+    float zMid = z0 - halfLen;
+
+    draw_box(fb, cam, basis, vec3(0.0f, -0.14f, zMid),
+             vec3(5.1f, 0.14f, halfLen), COL_TRACK);
+    draw_box(fb, cam, basis, vec3(0.0f, -0.02f, zMid),
+             vec3(3.9f, 0.04f, halfLen), COL_TRACK_CENTER);
+
+    for (side = -1; side <= 1; side += 2) {
+      float sx = (float)side;
+      draw_box(fb, cam, basis, vec3(sx * 5.85f, 0.22f, zMid),
+               vec3(1.7f, 0.35f, halfLen), COL_PLATFORM);
+      draw_box(fb, cam, basis, vec3(sx * 5.85f, 0.58f, zMid),
+               vec3(1.675f, 0.04f, halfLen), COL_PLATFORM_TOP);
+      draw_box(fb, cam, basis, vec3(sx * 4.35f, 0.62f, zMid),
+               vec3(0.14f, 0.07f, halfLen), COL_PLATFORM_EDGE);
+      draw_box(fb, cam, basis, vec3(sx * 7.35f, 2.0f, zMid),
+               vec3(0.225f, 2.1f, halfLen), COL_WALL);
+      draw_box(fb, cam, basis, vec3(sx * 7.35f, 0.65f, zMid),
+               vec3(0.24f, 0.14f, halfLen), COL_WALL_TRIM);
+    }
+
+    for (laneIdx = 0; laneIdx < 3; laneIdx++) {
+      float x = LANE_DIRS[laneIdx] * laneW;
+      draw_box(fb, cam, basis, vec3(x, -0.01f, zMid),
+               vec3(1.0f, 0.05f, halfLen), COL_BALLAST);
+      draw_box(fb, cam, basis, vec3(x - 0.62f, 0.08f, zMid),
+               vec3(0.06f, 0.09f, halfLen), COL_RAIL);
+      draw_box(fb, cam, basis, vec3(x + 0.62f, 0.08f, zMid),
+               vec3(0.06f, 0.09f, halfLen), COL_RAIL);
+      draw_box(fb, cam, basis, vec3(x - 0.52f, 0.04f, zMid),
+               vec3(0.04f, 0.05f, halfLen), COL_RAIL);
+      draw_box(fb, cam, basis, vec3(x + 0.52f, 0.04f, zMid),
+               vec3(0.04f, 0.05f, halfLen), COL_RAIL);
+      for (s = 0; s < 2; s++) {
+        float sz = z0 - spacing * 0.5f - (float)s * spacing;
+        draw_box(fb, cam, basis, vec3(x, 0.01f, sz),
+                 vec3(0.825f, 0.07f, 0.18f), COL_SLEEPER);
+      }
+    }
   }
 }
 
@@ -649,16 +745,34 @@ static void draw_entity(Framebuffer *fb, const CameraTransform *cam,
       }
       break;
 
-    case ENTITY_TRAIN:
-      if (!get_entity_bounds(e, &b)) {
-        return;
+    case ENTITY_TRAIN: {
+      const float carLen = 7.2f;
+      float x = laneX;
+      float bodyH = GAME_CONFIG.trainBodyHeight * 0.64f;
+      float bodyY = GAME_CONFIG.trainBodyHeight * 0.32f;
+      float halfW = GAME_CONFIG.laneWidth * 0.9f * 0.5f;
+      float halfH = bodyH * 0.5f;
+      float halfCar = carLen * 0.48f;
+      int cars = e->cars;
+      int c;
+      if (cars < 1) {
+        cars = (int)(e->length / carLen + 0.5f);
+        if (cars < 1) {
+          cars = 1;
+        }
       }
-      draw_box(fb, cam, basis, b.center, b.halfSize, COL_TRAIN);
-      draw_box(fb, cam, basis,
-               vec3(b.center.x, b.center.y + b.halfSize.y * 0.55f, b.center.z),
-               vec3(b.halfSize.x * 0.95f, 0.12f, b.halfSize.z * 0.9f),
-               0xFFFF8A3Du);
+      /* Draw per car so long trains don't straddle the near plane as one mesh. */
+      for (c = 0; c < cars; c++) {
+        float rearZ = e->positionZ - (float)c * carLen;
+        float centerZ = rearZ - carLen * 0.5f;
+        draw_box(fb, cam, basis, vec3(x, bodyY, centerZ),
+                 vec3(halfW, halfH, halfCar), COL_TRAIN);
+        draw_box(fb, cam, basis,
+                 vec3(x, bodyY + halfH * 0.55f, centerZ),
+                 vec3(halfW * 0.95f, 0.12f, halfCar * 0.9f), 0xFFFF8A3Du);
+      }
       break;
+    }
 
     case ENTITY_COIN:
       if (e->collected || !get_entity_bounds(e, &b)) {
@@ -676,20 +790,21 @@ static void draw_entity(Framebuffer *fb, const CameraTransform *cam,
       break;
 
     case ENTITY_DECORATION: {
-      float x = laneX;
+      /* Side props sit off the playable lanes (same as ts-subway). */
+      float x = (float)e->lane * (GAME_CONFIG.laneWidth * 2.45f);
       if (e->style == DECOR_LAMP) {
-        draw_box(fb, cam, basis, vec3(x, 1.4f, e->positionZ),
-                 vec3(0.08f, 1.4f, 0.08f), COL_LAMP);
-        draw_box(fb, cam, basis, vec3(x, 2.9f, e->positionZ),
-                 vec3(0.22f, 0.18f, 0.22f), COL_LAMP_GLOW);
+        draw_box(fb, cam, basis, vec3(x, 1.55f, e->positionZ),
+                 vec3(0.1f, 1.7f, 0.1f), COL_LAMP);
+        draw_box(fb, cam, basis, vec3(x, 3.25f, e->positionZ),
+                 vec3(0.28f, 0.28f, 0.28f), COL_LAMP_GLOW);
       } else if (e->style == DECOR_SIGN) {
-        draw_box(fb, cam, basis, vec3(x, 1.8f, e->positionZ),
-                 vec3(0.08f, 1.8f, 0.08f), COL_LAMP);
-        draw_box(fb, cam, basis, vec3(x, 3.4f, e->positionZ),
-                 vec3(0.9f, 0.45f, 0.08f), COL_SIGN);
+        draw_box(fb, cam, basis, vec3(x, 1.55f, e->positionZ),
+                 vec3(0.09f, 1.55f, 0.09f), COL_LAMP);
+        draw_box(fb, cam, basis, vec3(x, 3.1f, e->positionZ),
+                 vec3(0.08f, 0.55f, 0.9f), COL_SIGN);
       } else {
-        draw_box(fb, cam, basis, vec3(x, 2.2f, e->positionZ),
-                 vec3(0.35f, 2.2f, 0.35f), COL_PILLAR);
+        draw_box(fb, cam, basis, vec3(x, 2.0f, e->positionZ),
+                 vec3(0.375f, 2.2f, 0.375f), COL_PILLAR);
       }
       break;
     }
@@ -717,6 +832,20 @@ static void draw_char(Framebuffer *fb, int x, int y, char c, uint32_t color,
   }
 }
 
+static void draw_char_outlined(Framebuffer *fb, int x, int y, char c,
+                               uint32_t color, int scale) {
+  int ox, oy;
+  for (oy = -1; oy <= 1; oy++) {
+    for (ox = -1; ox <= 1; ox++) {
+      if (ox == 0 && oy == 0) {
+        continue;
+      }
+      draw_char(fb, x + ox * scale, y + oy * scale, c, COL_HUD_OUTLINE, scale);
+    }
+  }
+  draw_char(fb, x, y, c, color, scale);
+}
+
 static void draw_text(Framebuffer *fb, int x, int y, const char *text,
                       uint32_t color, int scale) {
   int cx = x;
@@ -727,7 +856,7 @@ static void draw_text(Framebuffer *fb, int x, int y, const char *text,
       text++;
       continue;
     }
-    draw_char(fb, cx, y, *text, color, scale);
+    draw_char_outlined(fb, cx, y, *text, color, scale);
     cx += (5 + 1) * scale;
     text++;
   }
