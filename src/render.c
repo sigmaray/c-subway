@@ -1520,17 +1520,28 @@ static void draw_hud(Framebuffer *fb, const GameState *state) {
   }
 
   if (g_show_cheats || is_cheat_active(state->cheats)) {
-    y = 120;
-    draw_text(fb, 12, y, "CHEATS", COL_HUD, 2);
-    y += 20;
+    int cheatScale = 2;
+    int cheatLineH = (7 + 1) * cheatScale + 8;
+    int cheatPanelH = cheatLineH * 4 + 10;
+    int cheatPanelW = fb->width < 520 ? 190 : 230;
+
+    fill_rect_hud(fb, 8, 108, 8 + cheatPanelW, 108 + cheatPanelH, COL_HUD_PANEL);
+    fill_rect_hud(fb, 8, 108, 14, 108 + cheatPanelH, COL_HUD_ACCENT);
+
+    y = 116;
+    draw_text(fb, 22, y, "CHEATS", COL_HUD, cheatScale);
+    y += cheatLineH;
     sprintf(line, "1 IMMORTAL %s", state->cheats.immortal ? "ON" : "OFF");
-    draw_text(fb, 12, y, line, COL_HUD_DIM, 1);
-    y += 12;
+    draw_text(fb, 22, y, line,
+              state->cheats.immortal ? COL_HUD_GOLD : COL_HUD, cheatScale);
+    y += cheatLineH;
     sprintf(line, "2 MAXSPD %s", state->cheats.maxSpeed ? "ON" : "OFF");
-    draw_text(fb, 12, y, line, COL_HUD_DIM, 1);
-    y += 12;
+    draw_text(fb, 22, y, line,
+              state->cheats.maxSpeed ? COL_HUD_GOLD : COL_HUD, cheatScale);
+    y += cheatLineH;
     sprintf(line, "3 FLY %s", state->cheats.fly ? "ON" : "OFF");
-    draw_text(fb, 12, y, line, COL_HUD_DIM, 1);
+    draw_text(fb, 22, y, line,
+              state->cheats.fly ? COL_HUD_GOLD : COL_HUD, cheatScale);
   }
 
   if (state->muted) {
