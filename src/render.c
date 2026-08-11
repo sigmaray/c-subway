@@ -1519,7 +1519,7 @@ static void draw_hud(Framebuffer *fb, const GameState *state) {
     }
   }
 
-  if (g_show_cheats || is_cheat_active(state->cheats)) {
+  if (g_show_cheats) {
     int cheatScale = 2;
     int cheatLineH = (7 + 1) * cheatScale + 8;
     int cheatPanelH = cheatLineH * 4 + 10;
