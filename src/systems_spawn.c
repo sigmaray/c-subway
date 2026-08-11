@@ -3,8 +3,9 @@
 #include <string.h>
 
 typedef struct SpawnContext {
-  uint32_t seed;
-  float    difficulty;
+  uint32_t   seed;
+  float      difficulty;
+  CheatFlags cheats;
 } SpawnContext;
 
 typedef enum RowKind {
@@ -52,6 +53,77 @@ static const int BEAT_COUNT =
 static const PowerUpType POWER_UPS[4] = {
     POWERUP_MAGNET, POWERUP_MULTIPLIER, POWERUP_INVINCIBLE, POWERUP_BOOST
 };
+
+static bool power_up_allowed(PowerUpType type, const CheatFlags *cheats) {
+  if (cheats->noMagnets && type == POWERUP_MAGNET) {
+    return false;
+  }
+  if (cheats->noBoost && type == POWERUP_BOOST) {
+    return false;
+  }
+  return true;
+}
+
+static PowerUpType pick_power_up(uint32_t *seed, const CheatFlags *cheats) {
+  PowerUpType available[4];
+  int count = 0;
+  int i;
+  IntResult roll;
+
+  for (i = 0; i < 4; i++) {
+    if (power_up_allowed(POWER_UPS[i], cheats)) {
+      available[count++] = POWER_UPS[i];
+    }
+  }
+  if (count == 0) {
+    return POWERUP_MULTIPLIER;
+  }
+  roll = pick_index(*seed, count);
+  *seed = roll.seed;
+  return available[roll.value];
+}
+
+static void remove_power_up_from_list(GameEntity *entities, int *count,
+                                      PowerUpType type) {
+  int write = 0;
+  int read;
+  for (read = 0; read < *count; read++) {
+    GameEntity *entity = &entities[read];
+    if (entity->kind == ENTITY_POWER_UP && entity->powerUpType == type) {
+      continue;
+    }
+    if (write != read) {
+      entities[write] = entities[read];
+    }
+    write++;
+  }
+  *count = write;
+}
+
+void purge_blocked_power_ups(GameState *state) {
+  int s;
+  if (state == NULL) {
+    return;
+  }
+  if (state->cheats.noMagnets) {
+    remove_power_up_from_list(state->entities, &state->entityCount,
+                              POWERUP_MAGNET);
+    for (s = 0; s < state->world.segmentCount; s++) {
+      WorldSegment *seg = &state->world.segments[s];
+      remove_power_up_from_list(seg->entities, &seg->entityCount,
+                                POWERUP_MAGNET);
+    }
+  }
+  if (state->cheats.noBoost) {
+    remove_power_up_from_list(state->entities, &state->entityCount,
+                              POWERUP_BOOST);
+    for (s = 0; s < state->world.segmentCount; s++) {
+      WorldSegment *seg = &state->world.segments[s];
+      remove_power_up_from_list(seg->entities, &seg->entityCount,
+                                POWERUP_BOOST);
+    }
+  }
+}
 
 static float difficulty_from_state(const GameState *state) {
   float speedRange = GAME_CONFIG.maximumSpeed - GAME_CONFIG.initialSpeed;
@@ -636,12 +708,9 @@ static uint32_t spawn_pattern(WorldSegment *seg, float startZ,
     seed = powerChance.seed;
     if (powerChance.hit) {
       LanePick lanePick = pick_lane(seed);
-      IntResult typeRoll;
       PowerUpType powerUpType;
       seed = lanePick.seed;
-      typeRoll = pick_index(seed, 4);
-      seed = typeRoll.seed;
-      powerUpType = POWER_UPS[typeRoll.value];
+      powerUpType = pick_power_up(&seed, &ctx.cheats);
       push_entity(seg,
                   make_power_up(lanePick.value, rowZ - 4.5f, powerUpType));
       if (powerUpType == POWERUP_BOOST) {
@@ -676,7 +745,8 @@ static uint32_t spawn_pattern(WorldSegment *seg, float startZ,
 }
 
 static void create_segment(WorldSegment *out, float startZ, uint32_t seed,
-                           float difficulty, uint32_t *outSeed) {
+                           float difficulty, CheatFlags cheats,
+                           uint32_t *outSeed) {
   SpawnContext ctx;
   memset(out, 0, sizeof(*out));
   out->id = create_segment_id();
@@ -685,6 +755,7 @@ static void create_segment(WorldSegment *out, float startZ, uint32_t seed,
   out->entityCount = 0;
   ctx.seed = seed;
   ctx.difficulty = difficulty;
+  ctx.cheats = cheats;
   *outSeed = spawn_pattern(out, startZ, ctx);
 }
 
@@ -823,7 +894,8 @@ void spawn_world_objects(GameState *state) {
     if (isFirstStretch) {
       create_tutorial_segment(&created, nextSegmentZ, seed, &newSeed);
     } else {
-      create_segment(&created, nextSegmentZ, seed, difficulty, &newSeed);
+      create_segment(&created, nextSegmentZ, seed, difficulty, state->cheats,
+                     &newSeed);
     }
     seed = newSeed;
 
@@ -833,7 +905,8 @@ void spawn_world_objects(GameState *state) {
       if (retryDiff < 0.0f) {
         retryDiff = 0.0f;
       }
-      create_segment(&created, nextSegmentZ, seed, retryDiff, &newSeed);
+      create_segment(&created, nextSegmentZ, seed, retryDiff, state->cheats,
+                     &newSeed);
       seed = newSeed;
     }
 
@@ -854,7 +927,8 @@ void spawn_world_objects(GameState *state) {
     while (state->world.segmentCount < 5 &&
            state->world.segmentCount < MAX_SEGMENTS) {
       WorldSegment created;
-      create_segment(&created, nextSegmentZ, seed, 0.0f, &newSeed);
+      create_segment(&created, nextSegmentZ, seed, 0.0f, state->cheats,
+                     &newSeed);
       seed = newSeed;
       state->world.segments[state->world.segmentCount++] = created;
       nextSegmentZ -= GAME_CONFIG.segmentLength;

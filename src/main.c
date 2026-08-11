@@ -23,7 +23,9 @@ static int save_changed(const SaveData *a, const SaveData *b) {
   return a->highScore != b->highScore || a->totalCoins != b->totalCoins ||
          a->muted != b->muted || a->cheats.immortal != b->cheats.immortal ||
          a->cheats.maxSpeed != b->cheats.maxSpeed ||
-         a->cheats.fly != b->cheats.fly;
+         a->cheats.fly != b->cheats.fly ||
+         a->cheats.noMagnets != b->cheats.noMagnets ||
+         a->cheats.noBoost != b->cheats.noBoost;
 }
 
 static void persist_if_needed(const GameState *state, SaveData *last,

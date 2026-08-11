@@ -8,7 +8,7 @@
 #include <windows.h>
 #endif
 
-#define SAVE_VERSION 2
+#define SAVE_VERSION 3
 
 static void default_save(SaveData *out) {
   memset(out, 0, sizeof(*out));
@@ -60,6 +60,8 @@ void storage_load(SaveData *out) {
   int immortal = 0;
   int maxSpeed = 0;
   int fly = 0;
+  int noMagnets = 0;
+  int noBoost = 0;
   float highScore = 0.0f;
   int totalCoins = 0;
 
@@ -106,6 +108,14 @@ void storage_load(SaveData *out) {
     fclose(f);
     return;
   }
+  if (fscanf(f, "noMagnets %d\n", &noMagnets) != 1) {
+    fclose(f);
+    return;
+  }
+  if (fscanf(f, "noBoost %d\n", &noBoost) != 1) {
+    fclose(f);
+    return;
+  }
   fclose(f);
 
   out->highScore = highScore;
@@ -114,6 +124,8 @@ void storage_load(SaveData *out) {
   out->cheats.immortal = immortal != 0;
   out->cheats.maxSpeed = maxSpeed != 0;
   out->cheats.fly = fly != 0;
+  out->cheats.noMagnets = noMagnets != 0;
+  out->cheats.noBoost = noBoost != 0;
 }
 
 void storage_save(const SaveData *data) {
@@ -134,5 +146,7 @@ void storage_save(const SaveData *data) {
   fprintf(f, "immortal %d\n", data->cheats.immortal ? 1 : 0);
   fprintf(f, "maxSpeed %d\n", data->cheats.maxSpeed ? 1 : 0);
   fprintf(f, "fly %d\n", data->cheats.fly ? 1 : 0);
+  fprintf(f, "noMagnets %d\n", data->cheats.noMagnets ? 1 : 0);
+  fprintf(f, "noBoost %d\n", data->cheats.noBoost ? 1 : 0);
   fclose(f);
 }

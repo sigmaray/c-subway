@@ -46,6 +46,7 @@ static void apply_command(GameState *state, GameCommand command) {
       return;
     case CMD_TOGGLE_CHEAT:
       state->cheats = toggle_cheat_flag(state->cheats, command.cheatId);
+      purge_blocked_power_ups(state);
       return;
     case CMD_RESTART:
       if (state->status.type == STATUS_READY) {

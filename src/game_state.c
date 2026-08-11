@@ -5,7 +5,7 @@ static uint32_t g_next_entity = 1;
 static uint32_t g_next_segment = 1;
 
 const CheatFlags DEFAULT_CHEATS = {
-  false, false, false
+  false, false, false, false, false
 };
 
 void reset_identifiers(void) {
@@ -115,12 +115,19 @@ CheatFlags toggle_cheat_flag(CheatFlags cheats, CheatId id) {
     case CHEAT_FLY:
       cheats.fly = !cheats.fly;
       break;
+    case CHEAT_NO_MAGNETS:
+      cheats.noMagnets = !cheats.noMagnets;
+      break;
+    case CHEAT_NO_BOOST:
+      cheats.noBoost = !cheats.noBoost;
+      break;
   }
   return cheats;
 }
 
 bool is_cheat_active(CheatFlags cheats) {
-  return cheats.immortal || cheats.maxSpeed || cheats.fly;
+  return cheats.immortal || cheats.maxSpeed || cheats.fly ||
+         cheats.noMagnets || cheats.noBoost;
 }
 
 void create_empty_world(WorldState *out) {

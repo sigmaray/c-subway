@@ -27,7 +27,7 @@ make win98        # requires i686-w64-mingw32-gcc
 - `P` / `Esc` — pause
 - `Enter` — start / restart
 - `M` — mute
-- `` ` `` / `F1` — cheat overlay; `1` immortal, `2` max speed, `3` fly
+- `` ` `` / `F1` — cheat overlay; `1` immortal, `2` max speed, `3` fly, `4` no magnets, `5` no jetpacks
 
 ## Layout
 

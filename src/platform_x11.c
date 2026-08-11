@@ -102,6 +102,14 @@ static void handle_key(KeySym key, InputState *input) {
     case XK_KP_3:
       push_cheat(input, CHEAT_FLY);
       break;
+    case XK_4:
+    case XK_KP_4:
+      push_cheat(input, CHEAT_NO_MAGNETS);
+      break;
+    case XK_5:
+    case XK_KP_5:
+      push_cheat(input, CHEAT_NO_BOOST);
+      break;
     default:
       break;
   }

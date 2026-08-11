@@ -95,6 +95,14 @@ static void handle_vk(WPARAM vk, InputState *input) {
     case VK_NUMPAD3:
       push_cheat(input, CHEAT_FLY);
       break;
+    case '4':
+    case VK_NUMPAD4:
+      push_cheat(input, CHEAT_NO_MAGNETS);
+      break;
+    case '5':
+    case VK_NUMPAD5:
+      push_cheat(input, CHEAT_NO_BOOST);
+      break;
     default:
       break;
   }

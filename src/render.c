@@ -1522,7 +1522,7 @@ static void draw_hud(Framebuffer *fb, const GameState *state) {
   if (g_show_cheats) {
     int cheatScale = 2;
     int cheatLineH = (7 + 1) * cheatScale + 8;
-    int cheatPanelH = cheatLineH * 4 + 10;
+    int cheatPanelH = cheatLineH * 6 + 10;
     int cheatPanelW = fb->width < 520 ? 190 : 230;
 
     fill_rect_hud(fb, 8, 108, 8 + cheatPanelW, 108 + cheatPanelH, COL_HUD_PANEL);
@@ -1542,6 +1542,14 @@ static void draw_hud(Framebuffer *fb, const GameState *state) {
     sprintf(line, "3 FLY %s", state->cheats.fly ? "ON" : "OFF");
     draw_text(fb, 22, y, line,
               state->cheats.fly ? COL_HUD_GOLD : COL_HUD, cheatScale);
+    y += cheatLineH;
+    sprintf(line, "4 NO MAG %s", state->cheats.noMagnets ? "ON" : "OFF");
+    draw_text(fb, 22, y, line,
+              state->cheats.noMagnets ? COL_HUD_GOLD : COL_HUD, cheatScale);
+    y += cheatLineH;
+    sprintf(line, "5 NO JET %s", state->cheats.noBoost ? "ON" : "OFF");
+    draw_text(fb, 22, y, line,
+              state->cheats.noBoost ? COL_HUD_GOLD : COL_HUD, cheatScale);
   }
 
   if (state->muted) {

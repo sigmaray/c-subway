@@ -199,7 +199,9 @@ typedef enum MovementType {
 typedef enum CheatId {
   CHEAT_IMMORTAL = 0,
   CHEAT_MAX_SPEED,
-  CHEAT_FLY
+  CHEAT_FLY,
+  CHEAT_NO_MAGNETS,
+  CHEAT_NO_BOOST
 } CheatId;
 
 typedef enum CommandType {
@@ -306,6 +308,8 @@ typedef struct CheatFlags {
   bool immortal;
   bool maxSpeed;
   bool fly;
+  bool noMagnets;
+  bool noBoost;
 } CheatFlags;
 
 typedef struct GameEvent {
@@ -479,6 +483,7 @@ void update_effects(GameState *state, float dt);
 
 bool has_passable_route(const GameEntity *entities, int count);
 void spawn_world_objects(GameState *state);
+void purge_blocked_power_ups(GameState *state);
 
 /* -------------------------------------------------------------------------- */
 /* Score / difficulty                                                         */
